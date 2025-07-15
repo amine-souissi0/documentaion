@@ -1,99 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CGSS Shift Management Project Documentation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2, h3 {
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-        h2 {
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-            margin-top: 20px;
-        }
-        h3 {
-            margin-top: 15px;
-            color: #007bff;
-        }
-        pre {
-            background: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
-            background: #f8f8f8;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-        ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        .task-section {
-            margin-bottom: 30px;
-        }
-        .how-i-did-it {
-            background: #e9f7ff;
-            padding: 15px;
-            border-left: 5px solid #007bff;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>CGSS Shift Management Project Documentation</h1>
-        
-        <h2>Project Overview</h2>
-        <p>
-            The CGSS Shift Management project, developed for CGSS Bank, addresses the challenges of manual shift scheduling by providing a robust, cloud-native web application. The system streamlines employee scheduling, absence management, and notifications, replacing inefficient Excel-based methods. Built using Flask, Docker, Kubernetes, and Google Cloud Platform (GCP), the application supports role-based access, secure authentication, and scalable deployment. This documentation outlines the major tasks, technical implementations, and practical steps taken to deliver a secure, user-friendly, and maintainable solution.
-        </p>
-        <p><strong>Student:</strong> Amine Souissi</p>
-        <p><strong>Academic Supervisor:</strong> Mrs. Swvar Ekimi</p>
-        <p><strong>Enterprise Supervisor:</strong> Mr. Attila Pohorai</p>
-        <p><strong>Duration:</strong> Six months (2024-2025)</p>
+CGSS Shift Management Project Documentation
+==========================================
 
-        <div class="task-section">
-            <h2>Task 1: Develop Flask-based Web Application</h2>
-            <p>
-                Built a Flask web application to handle user authentication, employee management, and shift scheduling with distinct roles for admins (full control) and employees (view-only access to shifts and personal details).
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Initialized a Flask project with modular blueprints for user, employee, and shift management.</li>
-                    <li>Used Flask-Login for session management and role-based access control.</li>
-                    <li>Created SQLite database with tables for users, employees, and shifts.</li>
-                    <li>Deployed locally using <code>flask run</code>.</li>
-                </ul>
-                <pre>
+Project Overview
+---------------
+The CGSS Shift Management project, developed for CGSS Bank, addresses the challenges of manual shift scheduling by providing a robust, cloud-native web application. The system streamlines employee scheduling, absence management, and notifications, replacing inefficient Excel-based methods. Built using Flask, Docker, Kubernetes, and Google Cloud Platform (GCP), the application supports role-based access, secure authentication, and scalable deployment. This documentation outlines the major tasks, technical implementations, and practical steps taken to deliver a secure, user-friendly, and maintainable solution.
+
+Student: Amine Souissi
+Academic Supervisor: Mrs. Swvar Ekimi
+Enterprise Supervisor: Mr. Attila Pohorai
+Duration: Six months (2024-2025)
+
+Task 1: Develop Flask-based Web Application
+-----------------------------------------
+Description:
+Built a Flask web application to handle user authentication, employee management, and shift scheduling with distinct roles for admins (full control) and employees (view-only access to shifts and personal details).
+
+How I Did It:
+- Initialized a Flask project with modular blueprints for user, employee, and shift management.
+- Used Flask-Login for session management and role-based access control.
+- Created SQLite database with tables for users, employees, and shifts.
+- Deployed locally using `flask run`.
+
+Code Example:
+```
 # app.py
 from flask import Flask
 from flask_login import LoginManager
@@ -112,25 +41,27 @@ def index():
 # Blueprint registration
 from routes.users import users_bp
 app.register_blueprint(users_bp)
-                </pre>
-                <p><strong>Command:</strong> <code>flask run</code> to start the server at <code>http://localhost:5000</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 2: Implement Secure Password Encryption</h2>
-            <p>
-                Replaced Werkzeug’s password hashing with Fernet encryption for secure password storage and verification.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Installed <code>cryptography</code> package: <code>pip install cryptography</code>.</li>
-                    <li>Generated a Fernet key and used it to encrypt/decrypt passwords.</li>
-                    <li>Updated user model to store encrypted passwords.</li>
-                    <li>Modified login logic to decrypt and verify passwords.</li>
-                </ul>
-                <pre>
+Command:
+```
+flask run
+```
+Access: http://localhost:5000
+
+Task 2: Implement Secure Password Encryption
+-------------------------------------------
+Description:
+Replaced Werkzeug’s password hashing with Fernet encryption for secure password storage and verification.
+
+How I Did It:
+- Installed `cryptography` package: `pip install cryptography`.
+- Generated a Fernet key and used it to encrypt/decrypt passwords.
+- Updated user model to store encrypted passwords.
+- Modified login logic to decrypt and verify passwords.
+
+Code Example:
+```
 # models.py
 from cryptography.fernet import Fernet
 from flask_sqlalchemy import SQLAlchemy
@@ -152,69 +83,72 @@ class User(db.Model):
             return fernet.decrypt(self.password.encode()).decode() == password
         except:
             return False
-                </pre>
-                <p><strong>Command:</strong> <code>python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"</code> to generate a key.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 3: Fix User-Employee Relationship in Database</h2>
-            <p>
-                Corrected the user-employee relationship in the SQLite database to ensure proper shift assignment.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Inspected database using SQLite CLI: <code>sqlite3 site.db</code>.</li>
-                    <li>Updated <code>users</code> table to link <code>employee_id</code>.</li>
-                    <li>Verified with SQL query and tested login functionality.</li>
-                </ul>
-                <pre>
+Command:
+```
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Task 3: Fix User-Employee Relationship in Database
+-------------------------------------------------
+Description:
+Corrected the user-employee relationship in the SQLite database to ensure proper shift assignment.
+
+How I Did It:
+- Inspected database using SQLite CLI: `sqlite3 site.db`.
+- Updated `users` table to link `employee_id`.
+- Verified with SQL query and tested login functionality.
+
+Code Example:
+```
 -- SQL Commands
 UPDATE users SET employee_id = 103 WHERE username = 'amine2';
 SELECT id, username, employee_id FROM users WHERE username = 'amine2';
-                </pre>
-                <p><strong>Command:</strong> <code>sqlite3 site.db</code> to access database, then ran SQL commands.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 4: Deploy Application on Google Cloud Platform (GCP)</h2>
-            <p>
-                Deployed the Flask app on a GCP VM with a public IP for external access.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created a GCP VM (2 vCPU, 4 GB RAM).</li>
-                    <li>Installed Python, Flask, and dependencies.</li>
-                    <li>Configured Flask to listen on <code>0.0.0.0:5000</code>.</li>
-                    <li>Opened port 5000 in GCP firewall.</li>
-                </ul>
-                <pre>
+Command:
+```
+sqlite3 site.db
+```
+
+Task 4: Deploy Application on Google Cloud Platform (GCP)
+--------------------------------------------------------
+Description:
+Deployed the Flask app on a GCP VM with a public IP for external access.
+
+How I Did It:
+- Created a GCP VM (2 vCPU, 4 GB RAM).
+- Installed Python, Flask, and dependencies.
+- Configured Flask to listen on `0.0.0.0:5000`.
+- Opened port 5000 in GCP firewall.
+
+Code Example:
+```
 # run.py
 from app import app
 app.run(host='0.0.0.0', port=5000)
-                </pre>
-                <p><strong>Command:</strong> <code>gcloud compute firewall-rules create allow-flask --allow tcp:5000</code>.</p>
-                <p><strong>Access:</strong> <code>http://34.16.33.223:5000</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 5: Implement Excel/CSV File Upload and Editing</h2>
-            <p>
-                Added functionality to upload, edit, and export Excel/CSV files for shift data.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created an <code>excel</code> Blueprint in Flask.</li>
-                    <li>Used pandas to parse uploaded files.</li>
-                    <li>Rendered editable HTML tables with <code>contenteditable</code>.</li>
-                    <li>Added download button for modified CSV.</li>
-                </ul>
-                <pre>
+Command:
+```
+gcloud compute firewall-rules create allow-flask --allow tcp:5000
+```
+Access: http://34.16.33.223:5000
+
+Task 5: Implement Excel/CSV File Upload and Editing
+-------------------------------------------------
+Description:
+Added functionality to upload, edit, and export Excel/CSV files for shift data.
+
+How I Did It:
+- Created an `excel` Blueprint in Flask.
+- Used pandas to parse uploaded files.
+- Rendered editable HTML tables with `contenteditable`.
+- Added download button for modified CSV.
+
+Code Example:
+```
 # routes/excel.py
 from flask import Blueprint, render_template, request
 import pandas as pd
@@ -228,8 +162,8 @@ def excel_upload():
         df = pd.read_csv(file)
         return render_template('excel.html', table=df.to_html(classes='editable'))
     return render_template('excel.html')
-                </pre>
-                <pre>
+```
+```
 <!-- templates/excel.html -->
 <table class="editable">
     {{ table | safe }}
@@ -240,24 +174,21 @@ function downloadCSV() {
     // JavaScript to convert table to CSV
 }
 </script>
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 6: Enhance Shift Management UI</h2>
-            <p>
-                Improved the shift management UI with radio buttons, editable dropdowns, and AJAX updates.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Replaced dropdown with radio buttons in <code>shifts.html</code>.</li>
-                    <li>Moved "Add Shift" to bottom of interface.</li>
-                    <li>Hid time columns with CSS.</li>
-                    <li>Used AJAX for shift updates.</li>
-                </ul>
-                <pre>
+Task 6: Enhance Shift Management UI
+----------------------------------
+Description:
+Improved the shift management UI with radio buttons, editable dropdowns, and AJAX updates.
+
+How I Did It:
+- Replaced dropdown with radio buttons in `shifts.html`.
+- Moved "Add Shift" to bottom of interface.
+- Hid time columns with CSS.
+- Used AJAX for shift updates.
+
+Code Example:
+```
 <!-- templates/shifts.html -->
 <input type="radio" name="shift" value="Morning"> Morning
 <input type="radio" name="shift" value="Evening"> Evening
@@ -274,31 +205,28 @@ function updateShift(select) {
     $.post('/update_shift', { shift_id: select.value });
 }
 </script>
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 7: Display Employee Off Days</h2>
-            <p>
-                Added a route to display approved and remaining off days for employees.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Added <code>/off_days</code> route in <code>employees.py</code>.</li>
-                    <li>Created <code>get_approved_off_days</code> in service layer.</li>
-                    <li>Rendered data in <code>off_days.html</code>.</li>
-                    <li>Updated sidebar navigation.</li>
-                </ul>
-                <pre>
+Task 7: Display Employee Off Days
+--------------------------------
+Description:
+Added a route to display approved and remaining off days for employees.
+
+How I Did It:
+- Added `/off_days` route in `employees.py`.
+- Created `get_approved_off_days` in service layer.
+- Rendered data in `off_days.html`.
+- Updated sidebar navigation.
+
+Code Example:
+```
 # routes/employees.py
 @employees_bp.route('/off_days')
 def off_days():
     off_days_data = employee_shift_service.get_approved_off_days()
     return render_template('off_days.html', off_days=off_days_data)
-                </pre>
-                <pre>
+```
+```
 <!-- templates/off_days.html -->
 <table>
     {% for employee in off_days %}
@@ -309,23 +237,20 @@ def off_days():
         </tr>
     {% endfor %}
 </table>
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 8: Dockerize the Flask Application</h2>
-            <p>
-                Containerized the Flask app for consistent deployment.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created a <code>Dockerfile</code>.</li>
-                    <li>Built and pushed image to Docker Hub.</li>
-                    <li>Ran container locally for testing.</li>
-                </ul>
-                <pre>
+Task 8: Dockerize the Flask Application
+--------------------------------------
+Description:
+Containerized the Flask app for consistent deployment.
+
+How I Did It:
+- Created a `Dockerfile`.
+- Built and pushed image to Docker Hub.
+- Ran container locally for testing.
+
+Code Example:
+```
 # Dockerfile
 FROM python:3.9-slim
 WORKDIR /app
@@ -334,30 +259,28 @@ RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 5000
 CMD ["python", "run.py"]
-                </pre>
-                <p><strong>Commands:</strong></p>
-                <pre>
+```
+
+Commands:
+```
 docker build -t my-flask-app .
 docker tag my-flask-app gocho123/my-flask-app:latest
 docker push gocho123/my-flask-app:latest
 docker run -p 5000:5000 gocho123/my-flask-app:latest
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 9: Automate Docker Builds with GitHub Actions</h2>
-            <p>
-                Set up a GitHub Actions workflow to automate Docker builds and pushes.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Added Docker Hub credentials to GitHub Secrets.</li>
-                    <li>Created a workflow YAML file.</li>
-                    <li>Tested automated build and push.</li>
-                </ul>
-                <pre>
+Task 9: Automate Docker Builds with GitHub Actions
+------------------------------------------------
+Description:
+Set up a GitHub Actions workflow to automate Docker builds and pushes.
+
+How I Did It:
+- Added Docker Hub credentials to GitHub Secrets.
+- Created a workflow YAML file.
+- Tested automated build and push.
+
+Code Example:
+```
 # .github/workflows/docker-build.yml
 name: Docker Build
 on: [push]
@@ -377,23 +300,20 @@ jobs:
           context: .
           push: true
           tags: gocho123/my-flask-app:latest
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 10: Deploy Flask App on GCP with Terraform</h2>
-            <p>
-                Used Terraform to deploy the Flask app on a GCP VM with Docker.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Wrote <code>main.tf</code> to provision VM and install Docker.</li>
-                    <li>Configured firewall rules for port 5000.</li>
-                    <li>Applied Terraform script and tested access.</li>
-                </ul>
-                <pre>
+Task 10: Deploy Flask App on GCP with Terraform
+----------------------------------------------
+Description:
+Used Terraform to deploy the Flask app on a GCP VM with Docker.
+
+How I Did It:
+- Wrote `main.tf` to provision VM and install Docker.
+- Configured firewall rules for port 5000.
+- Applied Terraform script and tested access.
+
+Code Example:
+```
 # main.tf
 provider "google" {
   project = "your-project-id"
@@ -412,29 +332,27 @@ resource "google_compute_instance" "flask_vm" {
   }
   metadata_startup_script = "apt-get update && apt-get install -y docker.io && docker run -p 5000:5000 gocho123/my-flask-app:latest"
 }
-                </pre>
-                <p><strong>Commands:</strong></p>
-                <pre>
+```
+
+Commands:
+```
 terraform init
 terraform apply
-                </pre>
-                <p><strong>Access:</strong> <code>http://34.135.178.175:5000/login</code>.</p>
-            </div>
-        </div>
+```
+Access: http://34.135.178.175:5000/login
 
-        <div class="task-section">
-            <h2>Task 11: Deploy Apache Guacamole on VM</h2>
-            <p>
-                Deployed Apache Guacamole for remote desktop access using Docker Compose.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created a <code>docker-compose.yml</code> for Guacamole services.</li>
-                    <li>Installed Docker and Docker Compose on a Debian VM.</li>
-                    <li>Ran the stack and accessed Guacamole.</li>
-                </ul>
-                <pre>
+Task 11: Deploy Apache Guacamole on VM
+-------------------------------------
+Description:
+Deployed Apache Guacamole for remote desktop access using Docker Compose.
+
+How I Did It:
+- Created a `docker-compose.yml` for Guacamole services.
+- Installed Docker and Docker Compose on a Debian VM.
+- Ran the stack and accessed Guacamole.
+
+Code Example:
+```
 # docker-compose.yml
 version: '3'
 services:
@@ -451,45 +369,43 @@ services:
     depends_on:
       - guacd
       - guac-mysql
-                </pre>
-                <p><strong>Command:</strong> <code>docker-compose up -d</code>.</p>
-                <p><strong>Access:</strong> <code>http://&lt;VM_IP&gt;/guacamole</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 12: Set Up Authentication Server with HashiCorp Vault</h2>
-            <p>
-                Configured HashiCorp Vault for secure credential management.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Installed Vault on a VM: <code>sudo apt install vault</code>.</li>
-                    <li>Initialized and unsealed Vault.</li>
-                    <li>Enabled SSH secrets engine.</li>
-                </ul>
-                <pre>
+Command:
+```
+docker-compose up -d
+```
+Access: http://<VM_IP>/guacamole
+
+Task 12: Set Up Authentication Server with HashiCorp Vault
+--------------------------------------------------------
+Description:
+Configured HashiCorp Vault for secure credential management.
+
+How I Did It:
+- Installed Vault on a VM: `sudo apt install vault`.
+- Initialized and unsealed Vault.
+- Enabled SSH secrets engine.
+
+Code Example:
+```
 # Vault commands
 vault operator init
 vault operator unseal
 vault secrets enable ssh
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 13: Configure NGINX Reverse Proxy</h2>
-            <p>
-                Set up NGINX as a reverse proxy for the Flask app.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created NGINX config in <code>/etc/nginx/sites-available/cggsdox</code>.</li>
-                    <li>Tested and reloaded NGINX.</li>
-                </ul>
-                <pre>
+Task 13: Configure NGINX Reverse Proxy
+-------------------------------------
+Description:
+Set up NGINX as a reverse proxy for the Flask app.
+
+How I Did It:
+- Created NGINX config in `/etc/nginx/sites-available/cggsdox`.
+- Tested and reloaded NGINX.
+
+Code Example:
+```
 # cggsdox
 server {
     listen 8080;
@@ -497,69 +413,62 @@ server {
         proxy_pass http://localhost:5000/;
     }
 }
-                </pre>
-                <p><strong>Commands:</strong></p>
-                <pre>
+```
+
+Commands:
+```
 sudo nginx -t
 sudo systemctl reload nginx
-                </pre>
-                <p><strong>Access:</strong> <code>http://35.208.94.224:8080/cggsdox/</code>.</p>
-            </div>
-        </div>
+```
+Access: http://35.208.94.224:8080/cggsdox/
 
-        <div class="task-section">
-            <h2>Task 14: Set Up Kubernetes Cluster</h2>
-            <p>
-                Established a Kubernetes cluster with master and worker nodes.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created VMs using <code>qemu-img</code> and <code>virt-install</code>.</li>
-                    <li>Installed Kubernetes components.</li>
-                    <li>Initialized cluster and deployed Flannel.</li>
-                </ul>
-                <pre>
+Task 14: Set Up Kubernetes Cluster
+---------------------------------
+Description:
+Established a Kubernetes cluster with master and worker nodes.
+
+How I Did It:
+- Created VMs using `qemu-img` and `virt-install`.
+- Installed Kubernetes components.
+- Initialized cluster and deployed Flannel.
+
+Code Example:
+```
 # On master node
 kubeadm init
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 15: Expose Flask App via NGINX Reverse Proxy on Kubernetes</h2>
-            <p>
-                Configured NGINX and SSH tunneling for Kubernetes-hosted Flask app.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Set up SSH tunnel to forward traffic.</li>
-                    <li>Configured NGINX to proxy to Kubernetes service.</li>
-                    <li>Updated DNS for subdomain.</li>
-                </ul>
-                <pre>
+Task 15: Expose Flask App via NGINX Reverse Proxy on Kubernetes
+-------------------------------------------------------------
+Description:
+Configured NGINX and SSH tunneling for Kubernetes-hosted Flask app.
+
+How I Did It:
+- Set up SSH tunnel to forward traffic.
+- Configured NGINX to proxy to Kubernetes service.
+- Updated DNS for subdomain.
+
+Code Example:
+```
 # SSH Tunnel
 ssh -L 8888:cggs-master:30532 user@poha-webserver
-                </pre>
-                <p><strong>Access:</strong> <code>http://amine.attilapohorai.com/my_shifts/</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 16: Deploy TeamCity on Kubernetes</h2>
-            <p>
-                Deployed TeamCity for CI/CD on Kubernetes.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created <code>teamcity-deployment.yaml</code>.</li>
-                    <li>Applied deployment and set up SSH tunnel.</li>
-                    <li>Resolved pod crashes by clearing disk space.</li>
-                </ul>
-                <pre>
+Access: http://amine.attilapohorai.com/my_shifts/
+
+Task 16: Deploy TeamCity on Kubernetes
+-------------------------------------
+Description:
+Deployed TeamCity for CI/CD on Kubernetes.
+
+How I Did It:
+- Created `teamcity-deployment.yaml`.
+- Applied deployment and set up SSH tunnel.
+- Resolved pod crashes by clearing disk space.
+
+Code Example:
+```
 # teamcity-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -592,43 +501,42 @@ spec:
     nodePort: 30111
   selector:
     app: teamcity
-                </pre>
-                <p><strong>Command:</strong> <code>kubectl apply -f teamcity-deployment.yaml</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 17: Configure TeamCity CI/CD Pipeline</h2>
-            <p>
-                Set up TeamCity to automate Flask app builds and deployments.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Connected TeamCity to GitHub repo with a token.</li>
-                    <li>Configured build steps for dependencies and app execution.</li>
-                </ul>
-                <pre>
+Command:
+```
+kubectl apply -f teamcity-deployment.yaml
+```
+
+Task 17: Configure TeamCity CI/CD Pipeline
+-----------------------------------------
+Description:
+Set up TeamCity to automate Flask app builds and deployments.
+
+How I Did It:
+- Connected TeamCity to GitHub repo with a token.
+- Configured build steps for dependencies and app execution.
+
+Code Example:
+```
 # Build Steps in TeamCity
 1. pip install -r requirements.txt
 2. python run.py
-                </pre>
-                <p><strong>Access:</strong> <code>http://192.168.122.76:5000</code>.</p>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 18: Automate SSH Tunnel with Systemd</h2>
-            <p>
-                Automated SSH tunneling using a systemd service.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created <code>autossh-tunnel.service</code>.</li>
-                    <li>Enabled service to start on boot.</li>
-                </ul>
-                <pre>
+Access: http://192.168.122.76:5000
+
+Task 18: Automate SSH Tunnel with Systemd
+----------------------------------------
+Description:
+Automated SSH tunneling using a systemd service.
+
+How I Did It:
+- Created `autossh-tunnel.service`.
+- Enabled service to start on boot.
+
+Code Example:
+```
 # /etc/systemd/system/autossh-tunnel.service
 [Unit]
 Description=AutoSSH Tunnel
@@ -638,27 +546,25 @@ ExecStart=/usr/bin/autossh -M 0 -L 31111:cggs-master:30532 user@poha-webserver
 Restart=always
 [Install]
 WantedBy=multi-user.target
-                </pre>
-                <p><strong>Commands:</strong></p>
-                <pre>
+```
+
+Commands:
+```
 sudo systemctl enable autossh-tunnel
 sudo systemctl start autossh-tunnel
-                </pre>
-            </div>
-        </div>
+```
 
-        <div class="task-section">
-            <h2>Task 19: Implement Blue/Green Deployment with Ansible</h2>
-            <p>
-                Used Ansible for blue/green deployment to minimize downtime.
-            </p>
-            <div class="how-i-did-it">
-                <h3>How I Did It</h3>
-                <ul>
-                    <li>Created <code>deploy_flask_docker.yml</code> playbook.</li>
-                    <li>Configured green deployment, health checks, and traffic switch.</li>
-                </ul>
-                <pre>
+Task 19: Implement Blue/Green Deployment with Ansible
+---------------------------------------------------
+Description:
+Used Ansible for blue/green deployment to minimize downtime.
+
+How I Did It:
+- Created `deploy_flask_docker.yml` playbook.
+- Configured green deployment, health checks, and traffic switch.
+
+Code Example:
+```
 # deploy_flask_docker.yml
 - hosts: flask_servers
   tasks:
@@ -679,16 +585,14 @@ sudo systemctl start autossh-tunnel
       docker_container:
         name: flask-blue
         state: absent
-                </pre>
-                <p><strong>Command:</strong> <code>ansible-playbook deploy_flask_docker.yml</code>.</p>
-                <p><strong>Access:</strong> <code>http://34.59.9.209/login</code>.</p>
-            </div>
-        </div>
+```
 
-        <h2>Conclusion</h2>
-        <p>
-            The CGSS Shift Management project successfully delivered a scalable, secure, and user-friendly web application that modernized shift scheduling at CGSS Bank. By leveraging Flask, Docker, Kubernetes, GCP, and modern DevOps practices, the system addressed key pain points, improved operational efficiency, and enhanced employee satisfaction. The modular architecture and automated CI/CD pipelines ensure maintainability and future scalability.
-        </p>
-    </div>
-</body>
-</html>
+Command:
+```
+ansible-playbook deploy_flask_docker.yml
+```
+Access: http://34.59.9.209/login
+
+Conclusion
+----------
+The CGSS Shift Management project successfully delivered a scalable, secure, and user-friendly web application that modernized shift scheduling at CGSS Bank. By leveraging Flask, Docker, Kubernetes, GCP, and modern DevOps practices, the system addressed key pain points, improved operational efficiency, and enhanced employee satisfaction. The modular architecture and automated CI/CD pipelines ensure maintainability and future scalability.
