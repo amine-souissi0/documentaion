@@ -1,598 +1,1598 @@
-CGSS Shift Management Project Documentation
-==========================================
+# CGSS Shift Management Project Documentation
 
-Project Overview
----------------
-The CGSS Shift Management project, developed for CGSS Bank, addresses the challenges of manual shift scheduling by providing a robust, cloud-native web application. The system streamlines employee scheduling, absence management, and notifications, replacing inefficient Excel-based methods. Built using Flask, Docker, Kubernetes, and Google Cloud Platform (GCP), the application supports role-based access, secure authentication, and scalable deployment. This documentation outlines the major tasks, technical implementations, and practical steps taken to deliver a secure, user-friendly, and maintainable solution.
+## Introduction
+The CGSS Shift Management project transforms a manual Excel-based shift scheduling process into a scalable, cloud-native Flask web application. The system automates employee scheduling, absence management, and notifications, with role-based access control (RBAC) for admins and regular users. Deployed on Google Cloud Platform (GCP) using Docker, Kubernetes, TeamCity, and now Ansible for automation, it ensures reliability and scalability. This documentation provides a detailed, organized, and comprehensive step-by-step account of all tasks, including the creation of a Kubernetes cluster with QEMU/KVM, TeamCity installation, Ansible automation, and related deployment efforts, reflecting the extensive effort invested over several weeks and months.
 
-Student: Amine Souissi
-Academic Supervisor: Mrs. Swvar Ekimi
-Enterprise Supervisor: Mr. Attila Pohorai
-Duration: Six months (2024-2025)
+## 1. Project Overview (Topic & Goal)
+The project is a Flask-based web application intended to manage:
+- **User Authentication (Login/Logout)**: Secure access for all users.
+- **User Management (Create, Update, Delete users)**: Admin-only functionality to handle user accounts.
+- **Employee and Shift Management**:
+  - Scheduling and assigning work shifts to employees.
+  - Viewing and editing employee details.
+  - Managing shifts (date, time, assignments).
 
-Task 1: Develop Flask-based Web Application
------------------------------------------
-Description:
-Built a Flask web application to handle user authentication, employee management, and shift scheduling with distinct roles for admins (full control) and employees (view-only access to shifts and personal details).
+### Core Functionality Clearly Explained
+- The application allows administrators and regular users to access it securely.
+- Admins can manage users, employees, and shifts.
+- Regular users can view their assigned schedules and related information.
 
-How I Did It:
-- Initialized a Flask project with modular blueprints for user, employee, and shift management.
-- Used Flask-Login for session management and role-based access control.
-- Created SQLite database with tables for users, employees, and shifts.
-- Deployed locally using `flask run`.
+### Simple User Scenario (Use Case Clearly Explained)
+#### A. Admin User (amine)
+- **Login**: Access at http://localhost:5000/login with Admin credentials (Username: amine, Password: amine).
+- **After Login**: 
+  - View dashboard.
+  - Create and manage other users (admin, user roles).
+  - Assign shifts to employees.
+  - View and manage employee records.
+- **Logout**: Click the logout option provided.
 
-Code Example:
+#### B. Regular User
+- **Login**: Access at http://localhost:5000/login with regular user credentials.
+- **After Login**: 
+  - View their assigned shifts.
+  - See personal employee details.
+  - No administrative management features.
+- **Logout**: Click the logout option when finished.
+
+### Step-by-Step Guide to Clearly Use the Application
+#### Step 1: Run the Application
+- Activate your virtual environment:
+  ```
+  cd C:\Users\user\OneDrive\Bureau\adc_webapp-main\adc_webapp-main
+  .\venv\Scripts\activate
+  flask run
+  ```
+- Open browser at: http://localhost:5000
+
+#### Step 2: Login Clearly and Simply
+- Login with your created user:
+  ```
+  Username: amine
+  Password: amine
+  ```
+
+#### Step 2: Use Dashboard and Features (Explicitly Explained)
+- Navigate via sidebar or dashboard menus:
+  - **Users**: Create, edit, and manage user accounts.
+  - **Employees**: Manage details, add/remove employees.
+  - **Shifts**: Schedule and assign shifts to employees.
+
+#### Step 3: Logout Explicitly
+- After completing work, log out via the logout button.
+
+### A Quick Summary for Understanding Your Application
+| Feature            | Description (clearly)                        | Admin | User |
+|---------------------|---------------------------------------------|-------|------|
+| Login/Logout        | Securely log in/out using encrypted passwords. | ✅    | ✅   |
+| Manage Users        | Create, edit, delete users (Admins Only)    | ✅    |      |
+| Manage Employees    | Add, update, view employee information      | ✅    |      |
+| Shift Management    | Assign shifts to employees and manage shifts.| ✅    |      |
+| View Shifts         | Users and Admins view their assigned shifts. | ✅    | ✅   |
+| Role-Based          | Admin can manage everything; Users limited view | ✅    |      |
+
+### Technical Details (Briefly and Explicitly)
+- **Framework**: Flask
+- **Database**: SQLite3 (app/database/database.db)
+- **Encryption**: Fernet (cryptography.fernet)
+
+### Simple Example Workflow
+- Login as Admin (amine/amine)
+- Add new employees.
+- Assign shifts to employees.
+- Logout and login as normal user to verify visibility restrictions.
+
+### Conclusion
+This application is a simple and secure Flask web-based employee and shift management system. Clearly separated roles (admin, user) provide distinct levels of access. The main goal is efficient employee and shift management in a secure, easy-to-use web interface.
+
+## Summary & Explanation (for Notes Clearly)
+
+### Why the Login Failed Initially (Problem Explanation)
+The Flask application stores passwords using the Fernet encryption method (from the cryptography.fernet module), defined in the configuration (Config.ENCRYPTION_KEY). Initially, Werkzeug's password hashing (generate_password_hash) was used, which is incompatible with the application's Fernet-based verification. The login route expected passwords to be encrypted and decrypted via Fernet, not hashed. This caused the error:
 ```
-# app.py
-from flask import Flask
-from flask_login import LoginManager
-from models import db, User
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SECRET_KEY'] = 'your-secret-key'
-db.init_app(app)
-login_manager = LoginManager(app)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# Blueprint registration
-from routes.users import users_bp
-app.register_blueprint(users_bp)
+Error decrypting password:
+Password check failed for user amine
 ```
-
-Command:
+due to the decryption attempt:
 ```
-flask run
-```
-Access: http://localhost:5000
-
-Task 2: Implement Secure Password Encryption
--------------------------------------------
-Description:
-Replaced Werkzeug’s password hashing with Fernet encryption for secure password storage and verification.
-
-How I Did It:
-- Installed `cryptography` package: `pip install cryptography`.
-- Generated a Fernet key and used it to encrypt/decrypt passwords.
-- Updated user model to store encrypted passwords.
-- Modified login logic to decrypt and verify passwords.
-
-Code Example:
-```
-# models.py
-from cryptography.fernet import Fernet
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
-key = Fernet.generate_key()
-fernet = Fernet(key)
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(255))
-
-    def set_password(self, password):
-        self.password = fernet.encrypt(password.encode()).decode()
-
-    def check_password(self, password):
-        try:
-            return fernet.decrypt(self.password.encode()).decode() == password
-        except:
-            return False
-```
-
-Command:
-```
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-```
-
-Task 3: Fix User-Employee Relationship in Database
--------------------------------------------------
-Description:
-Corrected the user-employee relationship in the SQLite database to ensure proper shift assignment.
-
-How I Did It:
-- Inspected database using SQLite CLI: `sqlite3 site.db`.
-- Updated `users` table to link `employee_id`.
-- Verified with SQL query and tested login functionality.
-
-Code Example:
-```
--- SQL Commands
-UPDATE users SET employee_id = 103 WHERE username = 'amine2';
-SELECT id, username, employee_id FROM users WHERE username = 'amine2';
+user.fernet.decrypt(user.password_hash.encode())
 ```
 
-Command:
+### Correct Approach (the Explicit and Final Method Clearly)
+To create a user correctly, encrypt the password using Fernet:
+- Import and instantiate Fernet:
+  ```
+  from cryptography.fernet import Fernet
+  from config import Config
+  fernet = Fernet(Config.ENCRYPTION_KEY)
+  ```
+- Encrypt the password:
+  ```
+  encrypted_password = fernet.encrypt('amine'.encode()).decode()
+  ```
+- Insert or update user directly into SQLite:
+  ```
+  import sqlite3
+  conn = sqlite3.connect('app/database/database.db')
+  cursor = conn.cursor()
+  cursor.execute("""
+  INSERT INTO users (username, password_hash, employee_id, is_active, role)
+  VALUES (?, ?, ?, ?, ?)
+  """, ('amine', encrypted_password, None, 1, 'admin'))
+  conn.commit()
+  conn.close()
+  ```
+- Or update an existing user:
+  ```
+  cursor.execute("UPDATE users SET password_hash=? WHERE username=?", (encrypted_password, 'amine'))
+  ```
+
+### Why This Solved the Issue Explicitly and Clearly
+The application uses Fernet encryption, not Werkzeug hashing. Switching to Fernet encryption resolved the login failures, ensuring the stored password matches the expected encryption method.
+
+### Final Result
+The encrypted password now matches the application's login logic. Login details:
+- URL: http://localhost:5000/login
+- Username: amine
+- Password: amine
+Login works successfully.
+
+## Initial Problem
+When creating employee (amine2) through the web application, the employee record was created successfully in the `employees` table, but the user account creation failed, displaying:
 ```
-sqlite3 site.db
+"Employee created, but user account creation failed, suppressing employee"
 ```
+This occurred because the application couldn’t correctly associate the employee with the user account, leaving `employee_id` as `None` in the `users` table.
 
-Task 4: Deploy Application on Google Cloud Platform (GCP)
---------------------------------------------------------
-Description:
-Deployed the Flask app on a GCP VM with a public IP for external access.
+### Steps Extracted from Photo (Manual Database Linking)
+1. Open SQLite database: `sqlite3 app/database/database.db`
+2. Check current user data: `SELECT id, username, employee_id FROM users WHERE username = 'amine2';`
+3. Identify the employee ID for amine2 from the `employees` table: `SELECT id FROM employees WHERE name = 'amine2';` (e.g., ID 103)
+4. Update the users table: `UPDATE users SET employee_id = 103 WHERE username = 'amine2';`
+5. Verify the update: `SELECT id, username, employee_id FROM users WHERE username = 'amine2';`
+6. Test login and shift visibility for amine2.
 
-How I Did It:
-- Created a GCP VM (2 vCPU, 4 GB RAM).
-- Installed Python, Flask, and dependencies.
-- Configured Flask to listen on `0.0.0.0:5000`.
-- Opened port 5000 in GCP firewall.
+### Final Result
+The problem was solved by manually linking the `employee_id` in the database. Now, user amine2 can log in and see shifts correctly associated with their employee record.
 
-Code Example:
-```
-# run.py
-from app import app
-app.run(host='0.0.0.0', port=5000)
-```
+## Task: Host Flask Application on External IP
 
-Command:
-```
-gcloud compute firewall-rules create allow-flask --allow tcp:5000
-```
-Access: http://34.16.33.223:5000
+### Purpose
+The purpose of this task is to make the Flask-based CGSS Shift Management application accessible externally via a public IP (e.g., GCP instance IP) for testing, demonstration, and collaboration. This step ensures administrators and users can interact with the app remotely, supporting the project's scalability and accessibility goals.
 
-Task 5: Implement Excel/CSV File Upload and Editing
--------------------------------------------------
-Description:
-Added functionality to upload, edit, and export Excel/CSV files for shift data.
+### Steps to Host Flask on an External IP
+1. **Cloned the Repository**
+   - Cloned the project repository to the GCP instance:
+     ```
+     git clone https://github.com/amine-souissi0/internship2025.git flask-app
+     cd flask-app
+     ```
+2. **Created and Activated a Virtual Environment**
+   - Set up a virtual environment to isolate dependencies:
+     ```
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+3. **Installed Dependencies**
+   - Installed required Python packages from the project requirements:
+     ```
+     pip install -r requirements.txt
+     ```
+4. **Handled Port Conflict**
+   - Checked for processes using port 5000 to resolve potential conflicts:
+     ```
+     sudo lsof -i :5000
+     ```
+   - Terminated conflicting processes (e.g., PIDs 80961 and 80964):
+     ```
+     sudo kill -9 80961 80964
+     ```
+5. **Started the Flask App**
+   - Launched the Flask application, binding it to all network interfaces:
+     ```
+     python run.py
+     ```
+   - The app became accessible at `http://0.0.0.0:5000`, enabling external access.
+6. **Accessed the App via External IP**
+   - The GCP instance has the public IP: **34.16.33.223**.
+   - By running Flask on `0.0.0.0`, the app was available on all network interfaces.
+   - Accessed the app in a browser at: `http://34.16.33.223:5000`.
 
-How I Did It:
-- Created an `excel` Blueprint in Flask.
-- Used pandas to parse uploaded files.
-- Rendered editable HTML tables with `contenteditable`.
-- Added download button for modified CSV.
+### Steps to Access and Work on the Flask Project
+#### Purpose
+This section provides instructions for other users (e.g., team members or supervisors) to access the GCP instance and work on the Flask project, ensuring seamless collaboration and development.
 
-Code Example:
-```
-# routes/excel.py
-from flask import Blueprint, render_template, request
-import pandas as pd
+#### Option 1: SSH into the Instance
+1. **Ask the User to Open Google Cloud Console**
+   - Navigate to [Google Cloud Console](https://console.cloud.google.com).
+   - Go to **Compute Engine → VM Instances**.
+   - Select the instance named `cgss-dev`.
+2. **Connect via SSH**
+   - Click the **"SSH"** button to open a terminal in the browser.
+   - Alternatively, use the local terminal with:
+     ```
+     gcloud compute ssh aminisouissi@cgss-dev --zone=us-central1-c
+     ```
+     *(Replace `aminisouissi` with the appropriate username if different.)*
 
-excel_bp = Blueprint('excel', __name__)
+#### Option 2: Manually Start the Flask App (If Needed)
+1. **Navigate to the Flask Project Folder**
+   ```
+   cd ~/flask-app
+   ```
+2. **Activate the Virtual Environment**
+   ```
+   source venv/bin/activate
+   ```
+3. **Run the Flask App**
+   ```
+   python run.py
+   ```
+   - This restarts the Flask app, making it accessible again on the external IP (**34.16.33.223:5000**).
 
-@excel_bp.route('/excel', methods=['GET', 'POST'])
-def excel_upload():
-    if request.method == 'POST':
-        file = request.files['file']
-        df = pd.read_csv(file)
-        return render_template('excel.html', table=df.to_html(classes='editable'))
-    return render_template('excel.html')
-```
-```
-<!-- templates/excel.html -->
-<table class="editable">
-    {{ table | safe }}
-</table>
-<button onclick="downloadCSV()">Download Edited CSV</button>
-<script>
-function downloadCSV() {
-    // JavaScript to convert table to CSV
-}
-</script>
-```
+### Conclusion
+Hosting the Flask app on an external IP (34.16.33.223:5000) enables remote access for administrators and users, aligning with the project's goal of a scalable, cloud-native solution. The provided steps ensure other users can connect to the GCP instance and resume development or testing efficiently.
 
-Task 6: Enhance Shift Management UI
-----------------------------------
-Description:
-Improved the shift management UI with radio buttons, editable dropdowns, and AJAX updates.
+## Task: Implement Excel/CSV File Upload and Editing Feature
 
-How I Did It:
-- Replaced dropdown with radio buttons in `shifts.html`.
-- Moved "Add Shift" to bottom of interface.
-- Hid time columns with CSS.
-- Used AJAX for shift updates.
+### Purpose
+The purpose of this task is to develop a feature within the CGSS Shift Management application that allows users to upload Excel or CSV files, edit them directly in the browser as an HTML table, and download the modified data as a new CSV file, enhancing data management capabilities.
 
-Code Example:
-```
-<!-- templates/shifts.html -->
-<input type="radio" name="shift" value="Morning"> Morning
-<input type="radio" name="shift" value="Evening"> Evening
-<style>
-    .time-column { display: none; }
-</style>
-<select onchange="updateShift(this)">
-    {% for shift in all_shifts %}
-        <option value="{{ shift.id }}">{{ shift.name }}</option>
-    {% endfor %}
-</select>
-<script>
-function updateShift(select) {
-    $.post('/update_shift', { shift_id: select.value });
-}
-</script>
-```
+### What You Implemented Step-by-Step
+#### 1. Backend: excel.py
+- Set up a Flask Blueprint called `excel`.
+- Allowed uploading of `.csv`, `.xlsx`, or `.xls` files.
+- Used pandas to read the uploaded file, performing the following cleaning:
+  - Skipped the first raw line.
+  - Removed empty rows.
+  - Replaced NaN with empty cells.
+  - Removed "Unnamed" and numeric-only column headers.
+- Rendered the table in HTML using `df.to_html(...)`.
+- Saved the file to the `/uploads` folder.
+- Enabled downloading via `/excel/download/<filename>`.
 
-Task 7: Display Employee Off Days
---------------------------------
-Description:
-Added a route to display approved and remaining off days for employees.
+#### 2. Frontend: excel.html (Jinja2 Template)
+- Created a form to upload files.
+- Displayed the uploaded table as a regular HTML `<table>`.
+- Made all `<td>` cells editable using:
+  ```
+  cell.setAttribute("contenteditable", "true");
+  ```
+- Added a "Download Edited CSV" button:
+  - Loops over the HTML table rows/cells.
+  - Collects the text into CSV format.
+  - Creates a `.csv` file and triggers download in the browser.
 
-How I Did It:
-- Added `/off_days` route in `employees.py`.
-- Created `get_approved_off_days` in service layer.
-- Rendered data in `off_days.html`.
-- Updated sidebar navigation.
+### How to Use It
+- Go to the `/excel/` route in your browser.
+- Upload a `.csv` or `.xlsx` file.
+- The file will:
+  - Display as a clean HTML table.
+  - Be editable (click into any cell and type).
+- Click the "Download Edited CSV" button:
+  - A new file (`edited_table.csv`) will be generated based on your changes.
+  - It will download automatically to your computer.
+- Optionally, click the "Download Original File" link to get the unedited uploaded version.
 
-Code Example:
-```
-# routes/employees.py
-@employees_bp.route('/off_days')
-def off_days():
-    off_days_data = employee_shift_service.get_approved_off_days()
-    return render_template('off_days.html', off_days=off_days_data)
-```
-```
-<!-- templates/off_days.html -->
-<table>
-    {% for employee in off_days %}
-        <tr>
-            <td>{{ employee.name }}</td>
-            <td>{{ employee.approved_off_days }}</td>
-            <td>{{ employee.remaining_off_days }}</td>
-        </tr>
-    {% endfor %}
-</table>
-```
+### How We Calculated the Shift Statistics – Step by Step
+#### Step 1: Upload and Read the Excel File
+- When a user uploads a CSV or Excel file, read it using Pandas:
+  ```
+  df = pd.read_excel(file_path, header=[1])  # Header row 1 = actual column names
+  ```
+- Stored the full data in a variable called `parsed_data` for calculations.
 
-Task 8: Dockerize the Flask Application
---------------------------------------
-Description:
-Containerized the Flask app for consistent deployment.
+#### Step 2: Prepare the Shift Types We Want to Track
+- Defined shift types to track (e.g., "Morning", "Night").
 
-How I Did It:
-- Created a `Dockerfile`.
-- Built and pushed image to Docker Hub.
-- Ran container locally for testing.
+#### Step 3: Loop Through Each Row (Employee)
+- Iterate over each employee row:
+  ```
+  for _, row in df.iterrows():
+      user = row.get("Full Name")
+  ```
 
-Code Example:
-```
-# Dockerfile
-FROM python:3.9-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["python", "run.py"]
-```
+#### Step 4: Initialize Their Shift Counters
+- If a user is not in the dictionary, initialize counters for each shift type:
+  ```
+  if user not in stats_dict:
+      stats_dict[user] = {key: 0 for key in shift_keywords}
+  ```
 
-Commands:
-```
-docker build -t my-flask-app .
-docker tag my-flask-app gocho123/my-flask-app:latest
-docker push gocho123/my-flask-app:latest
-docker run -p 5000:5000 gocho123/my-flask-app:latest
-```
+#### Step 5: Count the Shifts for Each Day
+- Iterate through each column in the row (each day):
+  ```
+  for col in row.index:
+      shift = str(row[col]).strip()
+      if shift in stats_dict[user]:
+          stats_dict[user][shift] += 1
+  ```
+- Increment the counter if "Morning" or "Night" is found in the cell.
 
-Task 9: Automate Docker Builds with GitHub Actions
-------------------------------------------------
-Description:
-Set up a GitHub Actions workflow to automate Docker builds and pushes.
+#### Step 6: Display the Stats in the Table
+- In the HTML (`shift_stats.html`):
+  - Loop through `stats_dict`.
+  - Display each shift count as a clickable number linked to shift details.
 
-How I Did It:
-- Added Docker Hub credentials to GitHub Secrets.
-- Created a workflow YAML file.
-- Tested automated build and push.
+### Goal
+The goal was to make the shift details page show the full context of a shift: Day + Week number + Date.
 
-Code Example:
-```
-# .github/workflows/docker-build.yml
-name: Docker Build
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: gocho123/my-flask-app:latest
-```
+### Step-by-Step Explanation
+#### 1. Understanding the Excel Structure
+- Analyzed the uploaded Excel file structure:
+  - Row 0: Week info (e.g., Week 39, Week 40).
+  - Row 1: Day names (e.g., Monday, Tuesday).
+  - Row 2: Dates (e.g., 25/11, 26/11).
+  - Row 3 and beyond: Shift data for each employee.
 
-Task 10: Deploy Flask App on GCP with Terraform
-----------------------------------------------
-Description:
-Used Terraform to deploy the Flask app on a GCP VM with Docker.
+#### 2. Identify the Target User’s Row
+- When a manager clicks on a shift count like “Morning: 5” for a specific employee:
+  - Locate that employee’s row in the parsed Excel.
+  - Loop over columns to check which days contain that shift type (e.g., “Morning”).
 
-How I Did It:
-- Wrote `main.tf` to provision VM and install Docker.
-- Configured firewall rules for port 5000.
-- Applied Terraform script and tested access.
+#### 3. Extract the Full Context of the Shift
+- For each matching shift:
+  - Get the Day from Row 1: `day_row[col]`.
+  - Get the Week info from Row 0: `week_row[col]`.
+  - Get the Date from Row 2: `date_row[col]`.
 
-Code Example:
-```
-# main.tf
-provider "google" {
-  project = "your-project-id"
-}
-resource "google_compute_instance" "flask_vm" {
-  name         = "flask-vm"
-  machine_type = "e2-medium"
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-10"
-    }
+#### 4. Format It as a Sentence
+- Combined the info:
+  ```
+  full_display = f"{day_str} - {week_str} - {formatted_date}"
+  ```
+- Example result: `Monday - Week 39 - 25/11`.
+
+#### 5. Display on the Web Page
+- Passed the formatted string to the template:
+  ```
+  shifts.append({
+      "datetime": full_display,
+      "type": shift
+  })
+  ```
+- Displayed as:
+  ```
+  Date & Day                | Shift Type
+  ---------------------------|-----------
+  Monday - Week 39 - 25/11  | Morning
+  ```
+
+### Why This Is Helpful
+- Managers instantly know what day, which week, and exact date the shift falls on.
+- Easier to track and report shift patterns by week.
+- Clean, organized, and easy to understand.
+
+### Changes Made
+1. Modified `shifts.py` to include a dictionary mapping shift types to time ranges (e.g., "Morning": ["08:00", "16:00"], "Night": ["20:00", "04:00"]).
+2. Updated the shift creation form in `shift_form.html` to trigger a JavaScript function on shift selection.
+3. Added JavaScript to dynamically populate `start_time` and `end_time` input fields based on the selected shift.
+4. Tested the feature to ensure time fields update correctly when a shift is selected.
+
+## Task: Hide Start and End Times for Employee Shifts
+
+### Purpose
+The purpose of this task is to enhance the user interface by hiding the Start Time and End Time columns in the shift management interface, improving readability and focusing on essential shift details.
+
+### Key Changes
+- **Hiding Start Time and End Time**:
+  - Modified the `<th>` and `<td>` elements for the start and end times by adding `style="display:none;"` to their respective columns in the shift table.
+- **Ensure Time Information is Not Displayed**:
+  - Inside the table rows, the columns for Start Time and End Time are now hidden. These can be entirely removed if preferred, depending on future requirements.
+
+### How to Use It
+- Navigate to the shift management page (e.g., `/shifts/`).
+- The table will display shift details without showing Start Time and End Time columns, providing a cleaner view for users.
+
+### Changes Made
+1. Updated `shifts.html` to include `style="display:none;"` in the `<th>` and `<td>` tags for Start Time and End Time columns.
+2. Verified that the hidden columns do not affect shift functionality or data integrity.
+3. Tested the interface to ensure a seamless user experience.
+
+## Task: Make Board Editable with Dropdowns and Allow Shift Updates
+
+### Purpose
+The purpose of this task is to make the shift board editable by implementing dropdown menus for shift assignments and enabling real-time updates to shift data, improving flexibility for administrators.
+
+### What You Implemented Step-by-Step
+#### 1. Backend: shifts.py
+- Added a route `/update_shift` to handle AJAX requests for updating shift assignments.
+- Implemented logic to update the database with the new shift selection using SQLAlchemy.
+
+#### 2. Frontend: shifts.html (Jinja2 Template)
+- Replaced static shift text with a `<select>` dropdown for each shift cell.
+- Populated the dropdown with available shift options (e.g., "Morning", "Night", "Off") using a Jinja2 loop.
+- Added an `onchange` event to trigger an AJAX call to `/update_shift` when a new option is selected.
+- Included JavaScript to send the selected shift value and employee/date context to the backend.
+
+#### 3. JavaScript
+- Wrote a function to handle the dropdown change event:
+  ```
+  function updateShift(selectElement) {
+      const shiftId = selectElement.value;
+      const employeeId = selectElement.dataset.employeeId;
+      const date = selectElement.dataset.date;
+      fetch('/update_shift', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shift_id: shiftId, employee_id: employeeId, date: date })
+      }).then(response => response.json())
+        .then(data => {
+          if (data.success) alert('Shift updated successfully!');
+        });
   }
-  network_interface {
-    network = "default"
-    access_config {}
+  ```
+- Ensured the dropdown updates the UI dynamically upon successful backend response.
+
+### How to Use It
+- Navigate to the shift board page (e.g., `/shifts/`).
+- Click on a shift cell to reveal a dropdown menu with shift options.
+- Select a new shift from the dropdown; the change will be saved via AJAX and reflected in the database.
+- Verify the update with a success message or refreshed table data.
+
+### Changes Made
+1. Modified `shifts.html` to include `<select>` elements with `onchange` events.
+2. Added `/update_shift` route in `shifts.py` with SQLAlchemy update logic.
+3. Implemented JavaScript for AJAX calls to handle updates.
+4. Tested the feature to ensure dropdown selections update shifts correctly and reflect in the database.
+
+## Task: Dockerize the CGSS Shift Management Project
+
+### Purpose
+The purpose of this task is to containerize the CGSS Shift Management project using Docker, enabling consistent deployment across different environments, and to push the resulting image to Docker Hub for broader accessibility.
+
+### What You Implemented Step-by-Step
+#### 1. Dockerizing the Project
+- Created a `Dockerfile` to package the project into a Docker image.
+- Built the Docker image with the name `my-flask-app`.
+- Ran the container from the image, with the app successfully running at `http://localhost:5000`.
+
+#### 2. Steps Followed
+- **Built the Image**:
+  - Ran the command `docker build -t my-flask-app .` to create the image.
+- **Ran the Container**:
+  - Used `docker run -p 5000:5000 my-flask-app` to start the container, named `objective_kare`, with port 5000 exposed to the local machine.
+- **Checked if It's Running**:
+  - Verified the container’s status using `docker ps`.
+
+#### 3. Tag the Image
+- Associated the image with the Docker Hub account:
+  - Ran `docker tag my-flask-app gocho123/my-flask-app:latest` to link the image to the repository `gocho123/my-flask-app` with the `latest` tag.
+
+#### 4. Push the Image to Docker Hub
+- Pushed the image using:
+  ```
+  docker push gocho123/my-flask-app:latest
+  ```
+
+#### 5. Verify the Image on Docker Hub
+- Logged into Docker Hub and confirmed the image appeared in the repositories.
+- The output from the `docker push` command confirmed successful upload.
+
+#### 6. Pull and Run the Image on Another Machine
+- **Pull the Image**:
+  - On another machine, ran `docker pull gocho123/my-flask-app:latest` to download the image from Docker Hub.
+- **Run the Container**:
+  - Started the container with `docker run -p 5000:5000 gocho123/my-flask-app:latest`, making the app accessible at `http://localhost:5000` on the new machine.
+
+### Conclusion
+By following these steps, the CGSS Shift Management application was successfully Dockerized, pushed to Docker Hub, and made accessible on any machine with Docker installed, ensuring portability and ease of deployment.
+
+## Task: Set Up Automated Builds with Docker and GitHub Actions
+
+### Purpose
+The purpose of this task is to establish an automated build and deployment pipeline using GitHub Actions and Docker, triggered by code changes in the GitHub repository, to streamline the development and deployment process of the CGSS Shift Management application.
+
+### What You Implemented Step-by-Step
+#### 1. Set Up GitHub Secrets for Docker Hub
+- Created two GitHub Secrets in the repository's Settings > Secrets:
+  - `DOCKER_USERNAME`: Set to the Docker Hub username (e.g., `gocho123`).
+  - `DOCKER_PASSWORD`: Set to a Docker Personal Access Token (PAT) generated from Docker Hub, used as the password for authentication.
+- These secrets enable secure authentication to Docker Hub during the CI/CD pipeline.
+
+#### 2. Create GitHub Actions Workflow for Docker Build and Push
+- Defined the `docker-build.yml` workflow file in the `.github/workflows/` directory, triggered by pushes or pull requests to the `main` branch.
+- The workflow includes the following steps:
+  - **Checkout Code**: Pulls the latest code from the repository.
+  - **Set Up Docker Buildx**: Prepares Docker Buildx for building multi-platform images.
+  - **Cache Docker Layers**: Caches Docker layers to optimize build times.
+  - **Build Docker Image**: Builds the Docker image using the `Dockerfile` and tags it with the commit SHA and `latest`.
+  - **Login to Docker Hub**: Authenticates using the credentials from GitHub Secrets.
+  - **Push Docker Image to Docker Hub**: Pushes the image with the commit SHA and `latest` tag to the `gocho123/my-flask-app` repository.
+
+#### 3. Set Up Docker Personal Access Token (PAT)
+- Generated a Docker PAT from Docker Hub with Public Repo Read-only access permissions.
+- Stored the PAT as the `DOCKER_PASSWORD` secret in GitHub for use in the workflow.
+
+#### 4. Test the Build and Push Process
+- Initiated the workflow, resulting in the image being successfully pushed to Docker Hub.
+- The image is now available in the `gocho123/my-flask-app` repository, tagged with both the commit SHA and `latest`.
+
+#### 5. Verification of Success
+- Confirmed the image push by visiting the Docker Hub profile, where the `latest` tag was visible.
+- Verified functionality by pulling and running the image locally:
+  - `docker pull gocho123/my-flask-app:latest`
+  - `docker run -p 5000:5000 gocho123/my-flask-app:latest` to test the Flask app.
+
+#### 6. Workflow Result
+- The GitHub Actions workflow ran successfully, with a green checkmark and logs confirming the image was pushed to Docker Hub without errors.
+
+#### 7. Sequence Code Explanation (Versioning in docker-build.yml)
+- Added a step named "Get the latest version tag" to handle versioning:
+  ```
+  - name: Get the latest version tag
+    id: get_version
+    run: |
+      # Get the latest tag from Docker Hub
+      latest_tag=$(curl -s https://registry.hub.docker.com/v2/repositories/gocho123/my-flask-app/tags | jq -r '.results | map(.name) | sort | .[-1]')
+      echo "Latest tag is: $latest_tag"
+      
+      # If there is no tag or the tag is "latest", start from version v1.0.0
+      if [[ $latest_tag == "latest" || -z "$latest_tag" ]]; then
+        new_version="v1.0.0"
+      else
+        # Split the version into parts and increment the patch version (last part)
+        IFS='.' read -r -a version_parts <<< "$latest_tag"
+        patch=${version_parts[2]}
+        patch=$((patch+1))  # Increment the patch version
+        new_version="${version_parts[0]}.${version_parts[1]}.$patch"  # Construct the new version
+      fi
+      
+      echo "New version tag is: $new_version"
+      echo "::set-output name=version::$new_version"  # Set the new version as output
+  ```
+- This code retrieves the latest tag, increments the patch version (e.g., from `v1.0.0` to `v1.0.1`), and sets the new version for tagging.
+
+### Conclusion
+The automated build and push process using GitHub Actions ensures that every code change triggers a new Docker image build and deployment to Docker Hub, improving development efficiency and version control.
+
+## Task: Automate Docker Image Build and Push with Jenkins
+
+### Purpose
+The purpose of this task is to set up a Jenkins pipeline on a Google Cloud VM to automate the process of cloning the GitHub repository, building a Docker image, and pushing it to a local Docker registry, enhancing the CI/CD workflow for the CGSS Shift Management application.
+
+### What You Implemented Step-by-Step
+#### 1. Created jenkins-fast VM on Google Cloud
+- Configured the VM with:
+  - Region: `us-central1`
+  - OS: Debian 12
+  - Allowed HTTP/HTTPS traffic
+  - Specs: 2 vCPU, 2 GB RAM
+
+#### 2. Installed Docker and Jenkins
+- Pulled the official Jenkins Docker image: `jenkins/jenkins:lts`.
+- Mounted the Docker socket to allow Jenkins to access the host Docker.
+- Launched the Jenkins container with:
+  ```
+  docker run -d \
+    --name jenkins \
+    -p 8080:8080 -p 50000:50000 \
+    -v jenkins_home:/var/jenkins_home \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    jenkins-with-docker
+  ```
+
+#### 3. Built Custom Jenkins Image with Docker and Git
+- Created a `Dockerfile` that installs:
+  - `docker.io`
+  - `git`
+- Matched the Docker group ID (GID 111) from the host to the Jenkins container.
+- Added the Jenkins user to the Docker group with:
+  ```
+  FROM jenkins/jenkins:lts
+  USER root
+  RUN apt-get update && apt-get install -y docker.io git
+  RUN groupmod -g 111 docker || groupadd -g 111 docker
+  RUN usermod -aG docker jenkins
+  USER jenkins
+  ```
+
+#### 4. Created Jenkins Pipeline Job (build-internship2025)
+- Configured the pipeline to clone the GitHub repo: `https://github.com/amine-souissi0/internship2025`.
+- Used the following pipeline script:
+  ```
+  pipeline {
+      agent any
+      stages {
+          stage('Clone GitHub Repo') {
+              steps {
+                  git branch: 'main', url: 'https://github.com/amine-souissi0/internship2025.git'
+              }
+          }
+          stage('Build Docker Image') {
+              steps {
+                  sh 'docker build -t localhost:5000/internship2025 .'
+              }
+          }
+          stage('Push to Local Registry') {
+              steps {
+                  sh 'docker push localhost:5000/internship2025'
+              }
+          }
+      }
   }
-  metadata_startup_script = "apt-get update && apt-get install -y docker.io && docker run -p 5000:5000 gocho123/my-flask-app:latest"
-}
-```
+  ```
 
-Commands:
-```
-terraform init
-terraform apply
-```
-Access: http://34.135.178.175:5000/login
+#### 5. Set Up a Local Docker Registry
+- Ran a registry container on the host:
+  ```
+  docker run -d -p 5000:5000 --name registry registry:2
+  ```
+- Confirmed it via:
+  ```
+  curl http://localhost:5000/v2/_catalog
+  ```
 
-Task 11: Deploy Apache Guacamole on VM
--------------------------------------
-Description:
-Deployed Apache Guacamole for remote desktop access using Docker Compose.
+#### 6. Final Results
+- Jenkins now fully automates:
+  - Git clone
+  - Docker build
+  - Docker push to local registry
+- The image is accessible via: `localhost:5000/internship2025`
 
-How I Did It:
-- Created a `docker-compose.yml` for Guacamole services.
-- Installed Docker and Docker Compose on a Debian VM.
-- Ran the stack and accessed Guacamole.
+### Conclusion
+The Jenkins pipeline successfully automates the build and deployment process, integrating with the local Docker registry and ensuring consistent image creation from the GitHub repository.
 
-Code Example:
-```
-# docker-compose.yml
-version: '3'
-services:
-  guacd:
-    image: guacamole/guacd
-  guac-mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-  guacamole:
-    image: guacamole/guacamole
-    ports:
-      - "8080:8080"
-    depends_on:
-      - guacd
-      - guac-mysql
-```
+## Task: Create a Terraform Script to Provision a Server and Run the Application
 
-Command:
-```
-docker-compose up -d
-```
-Access: http://<VM_IP>/guacamole
+### Purpose
+The purpose of this task is to develop a Terraform script to automate the provisioning of a Google Cloud VM, install necessary tools, clone the CGSS Shift Management project, build and run the application using Docker, and make it accessible over the internet, streamlining infrastructure deployment.
 
-Task 12: Set Up Authentication Server with HashiCorp Vault
---------------------------------------------------------
-Description:
-Configured HashiCorp Vault for secure credential management.
+### What is Terraform?
+Terraform is an infrastructure-as-code tool that automates the creation and management of cloud resources, allowing the definition of infrastructure in a script rather than manually through a console.
 
-How I Did It:
-- Installed Vault on a VM: `sudo apt install vault`.
-- Initialized and unsealed Vault.
-- Enabled SSH secrets engine.
+### What You Implemented Step-by-Step
+#### 1. Created a Folder for the Project
+- Organized files in a dedicated directory to maintain structure.
 
-Code Example:
-```
-# Vault commands
-vault operator init
-vault operator unseal
-vault secrets enable ssh
-```
+#### 2. Wrote a Terraform Script (main.tf)
+- Defined a VM configuration in `main.tf` specifying:
+  - A VM instance
+  - OS: Debian 12
+  - A startup script to automate application setup
 
-Task 13: Configure NGINX Reverse Proxy
--------------------------------------
-Description:
-Set up NGINX as a reverse proxy for the Flask app.
+#### 3. Startup Script
+- Embedded a shell script within `main.tf` to:
+  - Install `docker.io` and `git`:
+    ```
+    apt-get update && apt-get install -y docker.io git
+    ```
+  - Clone the GitHub project:
+    ```
+    git clone https://github.com/amine-souissi0/internship2025.git
+    ```
+  - Build the Docker image:
+    ```
+    cd internship2025 && docker build -t my-flask-app .
+    ```
+  - Run the Docker container:
+    ```
+    docker run -d -p 5000:5000 my-flask-app
+    ```
 
-How I Did It:
-- Created NGINX config in `/etc/nginx/sites-available/cggsdox`.
-- Tested and reloaded NGINX.
+#### 4. Fixed a Permissions Issue
+- Resolved a permissions error by:
+  - Stopping the VM
+  - Enabling Compute Engine and Cloud Platform scopes
+  - Restarting the VM
 
-Code Example:
-```
-# cggsdox
-server {
-    listen 8080;
-    location /cggsdox/ {
-        proxy_pass http://localhost:5000/;
-    }
-}
-```
+#### 5. Ran Terraform
+- Executed the following commands to apply the configuration:
+  ```
+  terraform init
+  terraform apply
+  ```
+- This created the VM and ran the application inside it.
 
-Commands:
-```
-sudo nginx -t
-sudo systemctl reload nginx
-```
-Access: http://35.208.94.224:8080/cggsdox/
+#### 6. Allowed Traffic on Port 5000
+- Created a firewall rule to open port 5000 to the internet, enabling external access.
 
-Task 14: Set Up Kubernetes Cluster
----------------------------------
-Description:
-Established a Kubernetes cluster with master and worker nodes.
+#### 7. Tested the App
+- Accessed the application at `http://[your-external-ip]:5000/login` and confirmed it worked.
 
-How I Did It:
-- Created VMs using `qemu-img` and `virt-install`.
-- Installed Kubernetes components.
-- Initialized cluster and deployed Flannel.
+### Conclusion
+The Terraform script successfully provisions a VM, installs dependencies, builds and runs the CGSS Shift Management application via Docker, and makes it accessible online, demonstrating an automated infrastructure setup.
 
-Code Example:
-```
-# On master node
-kubeadm init
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-```
+## Task: Implement Off Days Management Feature for CGSS Shift Management
 
-Task 15: Expose Flask App via NGINX Reverse Proxy on Kubernetes
--------------------------------------------------------------
-Description:
-Configured NGINX and SSH tunneling for Kubernetes-hosted Flask app.
+### Purpose
+The purpose of this task is to enhance the CGSS Shift Management application by adding a new page to view and manage off days requested by each user. The feature includes tracking an initial allocation of 20 off days per year per user, reducing the available off days upon approval of a request, and clearly displaying the remaining off days for each user.
 
-How I Did It:
-- Set up SSH tunnel to forward traffic.
-- Configured NGINX to proxy to Kubernetes service.
-- Updated DNS for subdomain.
+### What You Implemented Step-by-Step
+#### 1. Created a New Route (employees.py)
+- Added a new route `/off_days` to display a page showing each employee’s off-day information.
+- Implemented the `off_days()` function to:
+  - Gather data from the database using services.
+  - Calculate approved off days and remaining off days for each employee (initially 20 off days per year, reduced by approved requests).
+  - Pass the results to the `off_days.html` template.
+- This route ensures that accessing `/off_days` triggers the function to fetch and process the required data dynamically.
 
-Code Example:
-```
-# SSH Tunnel
-ssh -L 8888:cggs-master:30532 user@poha-webserver
-```
+#### 2. Created a Service to Calculate Approved Off Days (employee_shift_service.py)
+- Implemented the `get_approved_off_days(employee_id)` function to:
+  - Query the `employee_shift` table in the database to count approved off days for a specific employee.
+  - Used an SQL query to filter rows where `shift_type='OFF'` and `approval_status='Approved'`.
+- This function provides an accurate count of approved off days, which is used to calculate the remaining off days (20 - approved off days).
 
-Access: http://amine.attilapohorai.com/my_shifts/
+#### 3. Created HTML Template (off_days.html)
+- Designed a Jinja2 template to visualize the off-day data:
+  - Iterated over the `off_days_data` passed from the route.
+  - Displayed a table with columns for each employee’s name, approved off days, and remaining off days.
+- The template dynamically populates the table, ensuring a clear and user-friendly presentation of the data.
 
-Task 16: Deploy TeamCity on Kubernetes
--------------------------------------
-Description:
-Deployed TeamCity for CI/CD on Kubernetes.
+#### 4. Added Link to Navigation (sidebar.html)
+- Updated the `sidebar.html` template to include a new `<a>` link directing users to the `/off_days` route using Flask’s `url_for` method.
+- This addition integrates the new feature into the application’s navigation, making it easily accessible to users.
 
-How I Did It:
-- Created `teamcity-deployment.yaml`.
-- Applied deployment and set up SSH tunnel.
-- Resolved pod crashes by clearing disk space.
+### How to Use It
+- Log in as an admin or user and navigate to the "Off Days" link in the sidebar.
+- The `/off_days` page will display a table listing all employees with their approved off days and remaining off days (calculated as 20 minus approved off days).
+- Admins can approve off-day requests, which will automatically update the remaining off days for the respective employee.
 
-Code Example:
-```
-# teamcity-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: teamcity
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: teamcity
-  template:
-    metadata:
-      labels:
-        app: teamcity
-    spec:
-      containers:
-      - name: teamcity
-        image: jetbrains/teamcity-server
-        ports:
-        - containerPort: 8111
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: teamcity-service
-spec:
-  type: NodePort
-  ports:
-  - port: 8111
-    nodePort: 30111
-  selector:
-    app: teamcity
-```
+### Changes Made
+1. Added the `/off_days` route in `employees.py` with logic to fetch and calculate off-day data.
+2. Implemented `get_approved_off_days` in `employee_shift_service.py` to query approved off days.
+3. Created `off_days.html` to display the off-day information in a table format.
+4. Updated `sidebar.html` to include a link to the new off-days page.
 
-Command:
-```
-kubectl apply -f teamcity-deployment.yaml
-```
+### Conclusion
+The off days management feature successfully integrates into the CGSS Shift Management application, providing a clear view of off-day allocations and updates, enhancing administrative oversight and user experience.
 
-Task 17: Configure TeamCity CI/CD Pipeline
------------------------------------------
-Description:
-Set up TeamCity to automate Flask app builds and deployments.
+## Task: Docker App Deployment on GCP with Terraform for CGSS Shift Management
 
-How I Did It:
-- Connected TeamCity to GitHub repo with a token.
-- Configured build steps for dependencies and app execution.
+### Purpose
+The purpose of this task is to deploy the CGSS Shift Management application, packaged as the Docker image `gocho123/my-flask-app:latest`, to a Google Cloud VM using Terraform. The deployment exposes the application on port 5000 and ensures accessibility via a public IP, facilitating scalable and automated deployment.
 
-Code Example:
-```
-# Build Steps in TeamCity
-1. pip install -r requirements.txt
-2. python run.py
-```
+### What You Implemented Step-by-Step
+#### 1. Terraform Provisioning
+- Created a GCP VM named `internship2025-pull` using a Terraform script.
+- Configured a `google_compute_instance` resource and a `google_compute_firewall` rule to allow ingress traffic on TCP port 5000, applying target tags for security.
 
-Access: http://192.168.122.76:5000
+#### 2. Firewall Configuration
+- Updated firewall policies in the GCP Console to remove "Apply to all" and apply target tags (e.g., `allow-docker-5000`) instead, ensuring precise traffic control.
 
-Task 18: Automate SSH Tunnel with Systemd
-----------------------------------------
-Description:
-Automated SSH tunneling using a systemd service.
+#### 3. Docker Image Preparation
+- Built and pushed the updated image `gocho123/my-flask-app:latest` to Docker Hub.
+- Logged into Docker Hub from the VM using a personal access token for authentication.
 
-How I Did It:
-- Created `autossh-tunnel.service`.
-- Enabled service to start on boot.
+#### 4. Deployment on the VM
+- Pulled the image with `docker pull gocho123/my-flask-app:latest`.
+- Ran the container, mapping the internal Flask port 5000 to the VM's port 5000:
+  ```
+  docker run -d -p 5000:5000 --name my-flask-app gocho123/my-flask-app:latest
+  ```
 
-Code Example:
-```
-# /etc/systemd/system/autossh-tunnel.service
-[Unit]
-Description=AutoSSH Tunnel
-After=network.target
-[Service]
-ExecStart=/usr/bin/autossh -M 0 -L 31111:cggs-master:30532 user@poha-webserver
-Restart=always
-[Install]
-WantedBy=multi-user.target
-```
+#### 5. Debugging Port Conflict
+- Resolved a "port already allocated" error by stopping and removing the old container:
+  ```
+  docker stop my-flask-app
+  docker rm my-flask-app
+  ```
+- Redeployed the new image after freeing the port, ensuring successful startup.
 
-Commands:
-```
-sudo systemctl enable autossh-tunnel
-sudo systemctl start autossh-tunnel
-```
+#### 6. Verification
+- Confirmed the Flask app was running using `curl http://localhost:5000`.
+- Verified the redirect to `/login`, confirming the backend functionality.
 
-Task 19: Implement Blue/Green Deployment with Ansible
----------------------------------------------------
-Description:
-Used Ansible for blue/green deployment to minimize downtime.
+### How to Use It
+- Access the deployed application at `http://34.135.178.175:5000` to verify its operation in the browser.
 
-How I Did It:
-- Created `deploy_flask_docker.yml` playbook.
-- Configured green deployment, health checks, and traffic switch.
+### Changes Made
+1. Wrote a Terraform script to provision the VM and configure the firewall.
+2. Updated firewall rules in GCP to allow port 5000 traffic.
+3. Pulled and ran the Docker image on the VM, resolving port conflicts.
+4. Tested the deployment to ensure accessibility.
 
-Code Example:
-```
-# deploy_flask_docker.yml
-- hosts: flask_servers
-  tasks:
-    - name: Run green container
-      docker_container:
-        name: flask-green
-        image: gocho123/my-flask-app:latest
-        ports: "5001:5000"
-    - name: Health check
-      uri:
-        url: http://localhost:5001/health
-    - name: Switch NGINX to green
-      copy:
-        content: |
-          server { listen 80; location / { proxy_pass http://localhost:5001; } }
-        dest: /etc/nginx/sites-available/default
-    - name: Remove blue container
-      docker_container:
-        name: flask-blue
-        state: absent
-```
+### Next Steps
+- Ensure the app logic works as expected at `http://34.135.178.175:5000`.
+- Optionally automate redeployment using a shell script or CI/CD pipeline.
 
-Command:
-```
-ansible-playbook deploy_flask_docker.yml
-```
-Access: http://34.59.9.209/login
+### Conclusion
+The Terraform-based deployment successfully provisions a VM, deploys the CGSS Shift Management application via Docker, and makes it accessible, aligning with the project's goal of scalable deployment.
 
-Conclusion
-----------
-The CGSS Shift Management project successfully delivered a scalable, secure, and user-friendly web application that modernized shift scheduling at CGSS Bank. By leveraging Flask, Docker, Kubernetes, GCP, and modern DevOps practices, the system addressed key pain points, improved operational efficiency, and enhanced employee satisfaction. The modular architecture and automated CI/CD pipelines ensure maintainability and future scalability.
+## Task: SSH Authentication Setup for VM Access in CGSS Shift Management
+
+### Purpose
+The purpose of this task is to implement SSH key-based authentication for secure, passwordless access to the Google Cloud VM hosting the CGSS Shift Management application, enhancing security and simplifying access control for team members.
+
+### Why It’s Important
+- **Security**: SSH keys are more secure than passwords, reducing the risk of unauthorized access.
+- **Speed**: Instant login without password entry improves efficiency.
+- **Access Control**: Individual keys allow easy management of user access.
+- **Automation**: Supports secure script-based connections to the VM.
+
+### What You Implemented Step-by-Step
+#### 1. SSH Key Pair Creation
+- Generated a secure SSH key pair (ed25519) locally using:
+  ```
+  ssh-keygen -t ed25519 -C "your_email@example.com"
+  ```
+- Copied the public key from `~/.ssh/id_ed25519.pub`.
+
+#### 2. VM Configuration
+- Added the public key to the VM’s `~/.ssh/authorized_keys` file.
+- Set proper permissions:
+  ```
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/authorized_keys
+  ```
+
+#### 3. Tested the Connection
+- Tested the login using:
+  ```
+  ssh -i ~/.ssh/id_ed25519 username@VM_IP
+  ```
+- Confirmed successful login without a password.
+
+### How to Use It
+- Team members can use their SSH private key to access the VM securely by running the `ssh` command with the appropriate key and VM IP.
+
+### Changes Made
+1. Generated an ed25519 SSH key pair locally.
+2. Added the public key to the VM’s `authorized_keys` file.
+3. Configured permissions and tested the connection.
+
+### Conclusion
+SSH key-based authentication ensures secure and efficient access to the VM hosting the CGSS Shift Management application, aligning with best practices for secure VM management.
+
+## Task: Deployment Summary of Flask Application on VM using Docker for CGSS Shift Management
+
+### Purpose
+The purpose of this task is to deploy the CGSS Shift Management Flask application on a VM using Docker, ensuring it runs efficiently and is accessible via a public IP, replacing any conflicting services and optimizing the deployment process.
+
+### What You Implemented Step-by-Step
+#### 1. VM Preparation
+- Connected to the VM via SSH using its public IP address.
+- Verified Docker installation with `docker --version`.
+- Ensured Docker was configured and running.
+
+#### 2. Managing Existing Docker Containers
+- Listed all containers with `docker ps -a`.
+- Identified an existing `my-flask-app` container and a `guacamole` service using port 80.
+- Stopped the `guacamole` container to free port 80:
+  ```
+  docker stop guacamole
+  ```
+- Stopped and removed the old `my-flask-app` container:
+  ```
+  docker stop my-flask-app
+  docker rm my-flask-app
+  ```
+
+#### 3. Downloading and Running the Flask Container
+- Pulled the latest image from Docker Hub:
+  ```
+  docker pull gocho123/my-flask-app:latest
+  ```
+- Started the container, mapping port 5000 to 80:
+  ```
+  docker run -d -p 80:5000 --name my-flask-app gocho123/my-flask-app:latest
+  ```
+- Verified the container status with `docker ps`.
+
+#### 4. Network Configuration and External Access
+- Confirmed the VM’s public IP as `35.238.185.239`.
+- Ensured GCP firewall rules allowed inbound traffic on port 80.
+- Accessed the application at `http://35.238.185.239/`.
+
+### Changes Made
+1. Stopped and removed conflicting Docker containers.
+2. Pulled and ran the updated Flask image on port 80.
+3. Configured network settings for public access.
+
+### Conclusion
+The Flask application is successfully deployed on the VM using Docker, accessible at `http://35.238.185.239/`, with conflicts resolved and optimal port usage ensured.
+
+## Task: Implement Kubernetes Cluster Setup for CGSS Shift Management
+
+### Purpose
+The purpose of this task was to create a Kubernetes cluster on a bare-metal machine using QEMU/KVM virtual machines (VMs) to deploy and manage the CGSS Shift Management Flask application. This setup, involving a control plane (master) node and a worker node, was a multi-day effort to ensure scalability and resilience, integrating with previous deployment strategies.
+
+### Goal
+- Create a Kubernetes cluster with:
+  - 1 Control Plane node (Master): `cgss-master`
+  - 1 Worker node: `amine`
+- Deploy the Flask application within this cluster for enhanced management and scalability.
+
+### Tools Used
+| Tool            | Purpose                              |
+|-----------------|--------------------------------------|
+| QEMU/KVM        | Creates and manages virtual machines |
+| virt-install    | Simplifies VM creation with libvirt  |
+| Ubuntu 22.04    | Operating system for VMs             |
+| kubeadm         | Initializes and configures Kubernetes cluster |
+| kubelet, kubectl| Core Kubernetes components for node management and CLI operations |
+
+### Step-by-Step Instructions
+
+#### ✅ Step 1: Prepare the Host Machine
+- **Objective**: Ensure the physical host machine (running Arch Linux) is ready for virtualization.
+- **Requirements**: At least 16 CPU cores and 32 GB RAM.
+- **Actions**:
+  1. Install virtualization tools:
+     ```
+     sudo pacman -S qemu virt-manager bridge-utils libvirt
+     ```
+  2. Enable and start libvirt service:
+     ```
+     sudo systemctl enable --now libvirtd
+     ```
+- **Time Investment**: 1 day to resolve initial networking issues with the default virtual bridge.
+- **Verification**: Confirmed with `sudo systemctl status libvirtd`.
+
+#### ✅ Step 2: Create the Master Node VM (cgss-master)
+- **Objective**: Set up the control plane node with adequate resources.
+- **Actions**:
+  1. Create a 20GB disk image:
+     ```
+     qemu-img create -f qcow2 /var/lib/libvirt/images/cgss-master.qcow2 20G
+     ```
+  2. Install Ubuntu 22.04 VM:
+     ```
+     virt-install \
+       --name cgss-master \
+       --memory 8192 \
+       --vcpus 4 \
+       --disk path=/var/lib/libvirt/images/cgss-master.qcow2,format=qcow2 \
+       --cdrom /var/lib/libvirt/boot/ubuntu-22.04.5-live-server-amd64.iso \
+       --osinfo detect=on,require=off \
+       --network network=default \
+       --graphics none \
+       --noautoconsole
+     ```
+  3. Manually configure Ubuntu:
+     - Set hostname to `cgss-master`.
+     - Complete partitioning and user setup.
+- **Time Investment**: 2 days, including resolving a "disk locked error" by killing a stuck QEMU process (`sudo kill -9 <pid>`) and retrying.
+- **Verification**: Accessed via `virsh console cgss-master` or SSH.
+
+#### ✅ Step 3: Create the Worker Node VM (amine)
+- **Objective**: Set up the worker node with similar resources.
+- **Actions**:
+  1. Create a 20GB disk image:
+     ```
+     qemu-img create -f qcow2 /var/lib/libvirt/images/amine.qcow2 20G
+     ```
+  2. Install Ubuntu 22.04 VM:
+     ```
+     virt-install \
+       --name amine \
+       --memory 8192 \
+       --vcpus 4 \
+       --disk path=/var/lib/libvirt/images/amine.qcow2,format=qcow2 \
+       --cdrom /var/lib/libvirt/boot/ubuntu-22.04.5-live-server-amd64.iso \
+       --osinfo detect=on,require=off \
+       --network network=default \
+       --graphics none \
+       --noautoconsole
+     ```
+  3. Manually configure Ubuntu:
+     - Set hostname to `amine`.
+     - Complete partitioning and user setup.
+- **Time Investment**: 1.5 days, with network recognition issues resolved by using `--network=default`.
+- **Verification**: Accessed via `virsh console amine` or SSH.
+
+#### ✅ Step 4: Install Kubernetes on Both VMs
+- **Objective**: Prepare both nodes with Kubernetes and container runtime.
+- **Actions** (on both `cgss-master` and `amine`):
+  1. Update and install dependencies:
+     ```
+     sudo apt update
+     sudo apt install -y apt-transport-https curl
+     ```
+  2. Add Kubernetes repository:
+     ```
+     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+     ```
+  3. Install Kubernetes components:
+     ```
+     sudo apt update
+     sudo apt install -y kubelet kubeadm kubectl containerd
+     sudo apt-mark hold kubelet kubeadm kubectl
+     ```
+  4. Configure containerd:
+     ```
+     sudo mkdir -p /etc/containerd
+     containerd config default | sudo tee /etc/containerd/config.toml
+     sudo systemctl restart containerd
+     sudo systemctl enable kubelet
+     ```
+  5. Disable swap:
+     ```
+     sudo swapoff -a
+     sudo sed -i '/ swap / s/^/#/' /etc/fstab
+     ```
+- **Time Investment**: 1 day, with swap disable issues fixed by editing `/etc/fstab`.
+- **Verification**: Checked with `sudo systemctl status containerd`.
+
+#### ✅ Step 5: Initialize the Master Node
+- **Objective**: Set up the Kubernetes control plane.
+- **Actions**:
+  1. Initialize the cluster:
+     ```
+     sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+     ```
+     - Saved the token and CA hash for joining.
+  2. Configure kubectl:
+     ```
+     mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+     ```
+  3. Install Flannel network plugin:
+     ```
+     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+     ```
+- **Time Investment**: 1.5 days, with network plugin alignment issues resolved.
+- **Verification**: Ran `kubectl get nodes`.
+
+#### ✅ Step 6: Join the Worker Node
+- **Objective**: Add `amine` as a worker node.
+- **Actions**:
+  1. On `cgss-master`, generate join command:
+     ```
+     kubeadm token create --print-join-command
+     ```
+     - Example: `sudo kubeadm join 192.168.122.76:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>`
+  2. On `amine`, execute join command:
+     ```
+     sudo kubeadm join 192.168.122.76:6443 --token <your-token> --discovery-token-ca-cert-hash sha256:<your-ca-hash>
+     ```
+- **Time Investment**: 1 day, with network visibility fixed by ensuring same bridge.
+- **Verification**: Checked with `kubectl get nodes`.
+
+#### ✅ Step 7: Verify the Cluster
+- **Objective**: Confirm cluster functionality.
+- **Actions**:
+  1. On `cgss-master`, run:
+     ```
+     kubectl get nodes
+     ```
+  2. Expected output:
+     ```
+     NAME          STATUS   ROLES           AGE   VERSION
+     cgss-master   Ready    control-plane   XXm   v1.30.X
+     amine         Ready    <none>          XXs   v1.30.X
+     ```
+- **Time Investment**: Half a day to stabilize nodes.
+- **Verification**: Ensured both nodes are `Ready`.
+
+## 🔍 Troubleshooting Summary (Kubernetes)
+| Problem                | Solution                                      |
+|-------------------------|-----------------------------------------------|
+| No IP on worker         | Used `--network=default` in `virt-install`    |
+| Disk locked error       | Killed stuck QEMU process (`sudo kill -9 <pid>`) and retried |
+| kubeadm join failed     | Fixed network visibility (same bridge network) |
+| virsh start fails       | Added `--osinfo detect=on,require=off`        |
+
+## Additional Deployment and Kubernetes Integration
+
+### Deploying Flask App to Kubernetes
+- **Objective**: Deploy the Dockerized Flask app (`gocho123/my-flask-app:latest`) to the Kubernetes cluster.
+- **Actions**:
+  1. Created a `deployment.yaml`:
+     ```
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: cgss-flask-deployment
+     spec:
+       replicas: 2
+       selector:
+         matchLabels:
+           app: cgss-flask
+       template:
+         metadata:
+           labels:
+             app: cgss-flask
+         spec:
+           containers:
+           - name: cgss-flask
+             image: gocho123/my-flask-app:latest
+             ports:
+             - containerPort: 5000
+     ```
+  2. Created a `service.yaml`:
+     ```
+     apiVersion: v1
+     kind: Service
+     metadata:
+       name: cgss-flask-service
+     spec:
+       selector:
+         app: cgss-flask
+       ports:
+       - protocol: TCP
+         port: 80
+         targetPort: 5000
+       type: NodePort
+     ```
+  3. Applied configurations:
+     ```
+     kubectl apply -f deployment.yaml
+     kubectl apply -f service.yaml
+     ```
+- **Verification**: Accessed the app via the NodePort (e.g., `http://192.168.122.76:30532`).
+
+### Accessing Kubernetes App via SSH Reverse Tunnel
+- **Goal**: Expose the Flask app to the internet using `poha-webserver` (35.208.94.224).
+- **Actions**:
+  1. Set up SSH reverse tunnel from `cgss-master`:
+     ```
+     ssh -i ~/.ssh/id_rsa -R 8888:localhost:30532 aminisouissi@35.208.94.224
+     ```
+  2. Redirect port 80 on `poha-webserver`:
+     ```
+     sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8888
+     ```
+- **Access**: `http://35.208.94.224` reaches the Flask app.
+- **Time Investment**: 2 days to configure and test.
+
+### Deploying Flask App to amine.attilapohorai.com
+- **Actions**:
+  1. Confirmed DNS: `dig amine.attilapohorai.com +short` resolved to `35.208.94.224`.
+  2. Set up SSH tunnel: `ssh -i /home/amine/.ssh/id_rsa -R 8888:localhost:30532 aminisouissi@35.208.94.224`.
+  3. Configured NGINX on `poha-webserver`:
+     ```
+     server {
+         listen 80;
+         server_name amine.attilapohorai.com;
+         location / {
+             proxy_pass http://localhost:8888/;
+             proxy_http_version 1.1;
+             proxy_set_header Host $host;
+             proxy_set_header X-Real-IP $remote_addr;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+         }
+     }
+     ```
+  4. Reloaded NGINX: `sudo nginx -t && sudo systemctl reload nginx`.
+  5. Accessed: `http://amine.attilapohorai.com/my_shifts/`.
+- **Time Investment**: 1.5 days.
+- **Verification**: App displayed correctly.
+
+## Task: Install TeamCity and Integrate with Kubernetes
+
+### Purpose
+The purpose of this task was to install TeamCity on the Kubernetes cluster to automate the CI/CD pipeline for the CGSS Shift Management Flask app, enhancing deployment efficiency and reliability. This task, spanning several weeks, aligns with modern DevOps practices and integrates with the existing Kubernetes infrastructure.
+
+### What is TeamCity?
+TeamCity is a CI/CD server developed by JetBrains that automates:
+- Building code (compiling, running tests)
+- Packaging applications
+- Deploying applications to test, staging, or production environments
+
+### How TeamCity Relates to Kubernetes
+1. **Automated CI/CD for Kubernetes Workloads**:
+   - Automates Docker image builds, testing, and deployment to the Kubernetes cluster.
+   - Workflow: Developer pushes code → TeamCity builds/tests → Updates Kubernetes.
+2. **Deployment Automation**:
+   - Configures pipelines to build Docker images, push to registries (e.g., Docker Hub), and use `kubectl` or Helm for Kubernetes updates.
+3. **Managing Kubernetes Manifests**:
+   - Stores and manages `deployment.yaml` and `service.yaml` files for version control.
+4. **Feedback & Quality Gates**:
+   - Provides real-time feedback on builds, tests, and code quality before Kubernetes deployment.
+5. **Team Collaboration**:
+   - Offers centralized build logs, deployment history, and artifact storage for team visibility.
+
+### Why the Manager Requested TeamCity
+- **Automate Deployment**: Eliminates manual rebuilds and redeployments.
+- **Reliable Deployments**: Ensures consistent testing and deployment.
+- **Kubernetes Integration**: Optimizes the build-deploy lifecycle for Kubernetes.
+- **DevOps Practice**: Enhances agility and reduces deployment risks.
+
+### Step-by-Step Instructions
+
+#### ✅ Step 1: Prepare the Kubernetes Cluster and Master Node
+- **Objective**: Ensure the Kubernetes cluster is operational and the master node (`cgss-master`) is ready for TeamCity deployment.
+- **Actions**:
+  1. Verified the cluster health on `cgss-master`:
+     ```
+     kubectl get nodes
+     kubectl get pods --all-namespaces
+     ```
+     - Confirmed `cgss-master` and `amine` were `Ready`.
+  2. Provisioned VMs (`cgss-master`, `amine`, `poha-webserver`) on Google Cloud Platform, ensuring sufficient resources (16 cores, 32 GB RAM).
+  3. Installed `kubectl` and configured `kubeconfig` on `cgss-master`:
+     ```
+     mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+     ```
+- **Time Investment**: 1 week to stabilize the cluster and resolve initial networking issues.
+- **Verification**: Ensured all pods and nodes were healthy.
+
+#### ✅ Step 2: Prepare Disk Space on the Master Node
+- **Objective**: Address disk space constraints, a critical issue during deployment, to prevent pod crashes.
+- **Actions**:
+  1. Checked disk usage:
+     ```
+     df -h
+     ```
+  2. Cleared logs and temporary files:
+     ```
+     sudo rm -rf /var/log/containers/*
+     sudo rm -rf /var/log/pods/*
+     sudo journalctl --vacuum-time=1d
+     ```
+  3. Cleaned unused container images and data:
+     ```
+     sudo du -sh /var/*
+     sudo crictl rmi <unused-image-ids>
+     sudo docker image prune -a
+     ```
+  4. Confirmed at least 2-3 GB of free space.
+- **Time Investment**: 4 days to diagnose and resolve repeated pod crashes due to insufficient disk space.
+- **Verification**: Rechecked with `df -h` to ensure adequate space.
+
+#### ✅ Step 3: Deploy TeamCity Server on Kubernetes
+- **Objective**: Deploy TeamCity as a pod within the Kubernetes cluster.
+- **Actions**:
+  1. **Created the Deployment YAML (`teamcity-server.yaml`)**:
+     ```
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: teamcity-server
+     spec:
+       replicas: 1
+       selector:
+         matchLabels:
+           app: teamcity-server
+       template:
+         metadata:
+           labels:
+             app: teamcity-server
+         spec:
+           containers:
+           - name: teamcity-server
+             image: jetbrains/teamcity-server:2023.11.4
+             ports:
+             - containerPort: 8111
+             env:
+             - name: TEAMCITY_SERVER_MEM_OPTS
+               value: "-Xmx2g -Xms512m"
+             volumeMounts:
+             - name: teamcity-data
+               mountPath: /data/teamcity_server/datadir
+             - name: teamcity-logs
+               mountPath: /opt/teamcity/logs
+           volumes:
+           - name: teamcity-data
+             emptyDir: {}
+           - name: teamcity-logs
+             emptyDir: {}
+     ---
+     apiVersion: v1
+     kind: Service
+     metadata:
+       name: teamcity-server
+     spec:
+       type: NodePort
+       selector:
+         app: teamcity-server
+       ports:
+       - port: 8111
+         targetPort: 8111
+         nodePort: 30111
+     ```
+  2. **Applied the Manifest**:
+     ```
+     kubectl apply -f teamcity-server.yaml
+     ```
+  3. **Confirmed Pod Status**:
+     ```
+     kubectl get pods -o wide
+     kubectl get svc teamcity-server
+     ```
+     - Waited for the `teamcity-server` pod to reach `Running` state.
+- **Time Investment**: 5 days, including troubleshooting pod scheduling issues due to disk pressure and resource constraints.
+- **Verification**: Ensured the service exposed port 30111 on the node.
+
+#### ✅ Step 4: Troubleshooting and Node Scheduling
+- **Objective**: Resolve pod scheduling issues on the master node.
+- **Actions**:
+  1. Checked pod status and events:
+     ```
+     kubectl describe pod <pod-name>
+     kubectl describe node cgss-master
+     ```
+  2. Addressed issues such as disk pressure, taints, or insufficient resources by:
+     - Removing taints if present: `kubectl taint nodes cgss-master node-role.kubernetes.io/master-`
+     - Ensuring adequate CPU and memory allocation.
+  3. Restarted the pod if necessary:
+     ```
+     kubectl delete pod <pod-name>
+     ```
+- **Time Investment**: 3 days to stabilize pod scheduling.
+- **Verification**: Confirmed pod was running with `kubectl get pods`.
+
+#### ✅ Step 5: Expose TeamCity UI via SSH Tunnels
+- **Objective**: Make the TeamCity UI accessible from a local browser despite the private network.
+- **Actions**:
+  1. **Opened SSH Tunnel from Laptop to `poha-webserver`**:
+     ```
+     ssh -L 8111:localhost:8111 aminisouissi@35.208.94.224
+     ```
+     - Forwarded laptop port 8111 to `poha-webserver`:8111.
+  2. **Opened SSH Tunnel from `poha-webserver` to `cgss-master`**:
+     ```
+     ssh -L 8111:192.168.122.76:30111 root@localhost -p 4444
+     ```
+     - Forwarded `poha-webserver`:8111 to `cgss-master`:30111 (NodePort).
+  3. **Accessed TeamCity**:
+     - Opened `http://localhost:8111` in a browser.
+- **Time Investment**: 2 days to configure and test the double SSH tunnel.
+- **Verification**: Confirmed TeamCity UI loaded successfully.
+
+#### ✅ Step 6: Automate SSH Tunnel with `autossh`
+- **Objective**: Ensure the SSH tunnel for Flask app access (port 31111) is persistent.
+- **Actions**:
+  1. **Configured Reverse SSH Tunnel**:
+     ```
+     /usr/bin/autossh -M 0 -N -i /home/apohorai/.ssh/id_ed25519 -R 31111:192.168.122.76:31111 attila_pohorai@35.208.94.224
+     ```
+     - Forwarded `cgss-master`:31111 to `poha-webserver`:31111.
+  2. **Verified Functionality**:
+     ```
+     curl http://localhost:31111
+     ```
+     - Confirmed Flask app redirection.
+  3. **Created Systemd Service (`autossh-tunnel.service`)**:
+     ```
+     [Unit]
+     Description=Auto SSH Tunnel for Flask App
+     After=network.target
+
+     [Service]
+     User=root
+     ExecStart=/usr/bin/autossh -M 0 -N -i /home/apohorai/.ssh/id_ed25519 -R 31111:192.168.122.76:31111 attila_pohorai@35.208.94.224
+     Restart=always
+
+     [Install]
+     WantedBy=multi-user.target
+     ```
+  4. **Enabled and Started Service**:
+     ```
+     sudo systemctl daemon-reload
+     sudo systemctl enable autossh-tunnel.service
+     sudo systemctl start autossh-tunnel.service
+     ```
+  5. **Tested Service**:
+     ```
+     sudo systemctl status autossh-tunnel.service
+     ```
+     - Rebooted to confirm automatic restart.
+- **Time Investment**: 4 days to automate and troubleshoot tunnel persistence.
+- **Verification**: Ensured `http://35.208.94.224:31111` remained accessible post-reboot.
+
+#### ✅ Step 7: Configure nginx Reverse Proxy on `poha-webserver`
+- **Objective**: Serve the Flask app and documentation on alternative ports (e.g., 8080) for accessibility.
+- **Actions**:
+  1. **Edited nginx Config (`/etc/nginx/sites-available/cgssdox`)**:
+     ```
+     server {
+         listen 8080;
+         server_name _;
+         location /cgssdox/ {
+             alias /var/www/cgssdox/;
+             index index.html;
+         }
+     }
+     ```
+  2. **Restarted nginx**:
+     ```
+     sudo systemctl reload nginx
+     ```
+  3. **Opened Port 8080 in GCP Firewall**:
+     - Created rule `allow-8080` with target tag, source `0.0.0.0/0`, and port `tcp:8080`.
+  4. **Tested Locally and Externally**:
+     ```
+     curl http://localhost:8080/cgssdox/
+     ```
+     - Accessed `http://35.208.94.224:8080/cgssdox/` in browser.
+- **Time Investment**: 2 days to configure and test nginx proxy.
+- **Verification**: Confirmed documentation loaded at the specified URL.
+
+#### ✅ Step 8: Deploy Flask App with TeamCity
+- **Objective**: Automate Flask app deployment using TeamCity.
+- **Actions**:
+  1. **Set Up TeamCity Agent**:
+     - Installed agent on `amine` VM, connected and authorized in TeamCity UI.
+  2. **Connected to GitHub Repository**:
+     - Created project with URL `https://github.com/amine-souissi0/internship2025`.
+     - Generated GitHub PAT, configured in TeamCity wizard, verified with green check.
+  3. **Configured Build Steps**:
+     - Step 1: Install dependencies:
+       ```
+       python3 -m venv venv
+       source venv/bin/activate
+       pip install -r requirements.txt
+       ```
+     - Step 2: Build and run Docker image:
+       ```
+       docker pull gocho123/my-flask-app:latest || exit 1
+       docker stop my-flask-app || true
+       docker rm my-flask-app || true
+       docker run -d -p 5000:5000 --name my-flask-app gocho123/my-flask-app:latest
+       ```
+  4. **Ran Build**:
+     - Triggered build, monitored logs for success (e.g., Flask running on `0.0.0.0:5000`).
+  5. **Accessed App**:
+     - Verified at `http://192.168.122.76:5000` or via tunnel.
+- **Time Investment**: 1 week to configure and test CI/CD pipeline.
+- **Verification**: Confirmed app ran and logs showed successful startup.
+
+## 🔍 Troubleshooting Summary (TeamCity)
+| Problem                     | Solution                                      |
+|-----------------------------|-----------------------------------------------|
+| Pod crashes due to disk space | Cleared logs and unused images, ensured 2-3 GB free |
+| SSH tunnel drops            | Implemented `autossh` with systemd service    |
+| TeamCity UI inaccessible    | Configured double SSH tunnel and firewall rules |
+| Build failures              | Verified Docker Hub authentication and agent connectivity |
+
+## Task: Automate Deployment with Ansible for CGSS Shift Management
+
+### Purpose
+The purpose of this task is to automate the deployment of the CGSS Shift Management Flask application on a Google Cloud VM using Ansible, ensuring consistent and repeatable configuration across environments. This builds on previous deployment methods (Docker, Kubernetes, TeamCity) to further enhance the CI/CD pipeline.
+
+### What You Implemented Step-by-Step
+#### 1. Provisioned a Fresh VM
+- Spun up a blank VM named `flask-ansible-vm` on Google Cloud with:
+  - Region: `us-central1`
+  - OS: Debian 12
+  - Public IP: `34.59.9.209`
+
+#### 2. Installed Ansible
+- Installed Ansible on the VM to manage configuration and deployment:
+  ```
+  sudo apt update
+  sudo apt install -y software-properties-common
+  sudo add-apt-repository --yes --update ppa:ansible/ansible
+  sudo apt install -y ansible
+  ```
+- Verified installation with `ansible --version`.
+
+#### 3. Prepared Ansible Inventory
+- Created a `hosts.ini` file to specify the target host:
+  ```
+  [web]
+  localhost ansible_connection=local
+  ```
+- This configuration allows Ansible to manage the VM locally.
+
+#### 4. Wrote an Ansible Playbook (deploy_flask_docker.yml)
+- The following playbook was typed to automate the deployment:
+  ```
+  ---
+  - name: Deploy Flask App with Docker
+    hosts: web
+    become: yes
+    tasks:
+      - name: Install required packages
+        apt:
+          name:
+            - docker.io
+            - python3-pip
+            - git
+          state: present
+          update_cache: yes
+
+      - name: Ensure Docker is running and enabled
+        service:
+          name: docker
+          state: started
+          enabled: yes
+
+      - name: Install Docker Python module
+        pip:
+          name: docker
+          state: present
+
+      - name: Clone the GitHub repository
+        git:
+          repo: https://github.com/amine-souissi0/internship2025.git
+          dest: /opt/flask-app
+          update: yes
+
+      - name: Build Docker image
+        docker_image:
+          name: flask-app
+          build:
+            path: /opt/flask-app
+          source: build
+          state: present
+
+      - name: Run Docker container
+        docker_container:
+          name: flask-app-container
+          image: flask-app
+          state: started
+          ports:
+            - "5000:5000"
+          restart_policy: unless-stopped
+          pull: yes
+  ```
+- This playbook installs dependencies, clones the repository, builds the Docker image, and runs the container.
+
+#### 5. Configured nginx Reverse Proxy
+- Used an Ansible template to deploy an nginx config file (`nginx.conf.j2`):
+  ```
+  server {
+      listen 80;
+      server_name _;
+
+      location / {
+          proxy_pass http://localhost:5000;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+      }
+  }
+  ```
+- Applied the template and restarted nginx:
+  ```
+  - name: Copy nginx configuration
+    template:
+      src: nginx.conf.j2
+      dest: /etc/nginx/sites-available/flask-app
+    notify: Restart nginx
+
+  - name: Enable nginx configuration
+    file:
+      src: /etc/nginx/sites-available/flask-app
+      dest: /etc/nginx/sites-enabled/flask-app
+      state: link
+    notify: Restart nginx
+
+  - name: Remove default nginx site
+    file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+    notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+  ```
+- Installed nginx and ensured it was running:
+  ```
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: present
+  ```
+
+#### 6. Ran the Playbook
+- Executed the deployment with one command:
+  ```
+  ansible-playbook -i hosts.ini deploy_flask_docker.yml
+  ```
+- This automated the entire setup process.
+
+#### 7. Tested the Deployment
+- Accessed the application at `http://34.59.9.209/login` in a browser and confirmed the Flask app’s login page was live.
+
+### How to Use It
+- SSH into the VM (`34.59.9.209`) and run the playbook to redeploy or update the application:
+  ```
+  ansible-playbook -i hosts.ini deploy_flask_docker.yml
+  ```
+- The app will be accessible at `http://34.59.9.209/login` after deployment.
+
+### Changes Made
+1. Provisioned a fresh VM and installed Ansible.
+2. Created `hosts.ini` for local execution.
+3. Wrote and applied the `deploy_flask_docker.yml` playbook to automate Docker deployment.
+4. Configured nginx as a reverse proxy using a template.
+5. Tested the deployment to ensure functionality.
+
+### Conclusion
+The Ansible playbook successfully automates the deployment of the CGSS Shift Management Flask application, integrating Docker and nginx for a robust, repeatable process, as demonstrated on July 15, 2025, at 04:07 PM +08.
+
+## Conclusion
+The Kubernetes cluster setup, combined with TeamCity and Ansible automation, provides a robust infrastructure for the CGSS Shift Management application. The multi-week effort to configure VMs, install Kubernetes, deploy TeamCity, and automate with Ansible ensures a scalable and efficient deployment process. This aligns with modern DevOps practices, as demonstrated on July 15, 2025, at 04:07 PM +08.
