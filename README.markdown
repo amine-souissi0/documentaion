@@ -1081,6 +1081,9 @@ sudo kubeadm join 192.168.122.10:6443 --token abcdef.1234567890abcdef --discover
 - **Time Investment**: 1 day to resolve token expiration and network configuration errors.
 - **Verification**: Confirmed both nodes were Ready with `kubectl get nodes`.
 
+![ Kubernetes cluster Screenshot](docs/ Kubernetes%20cluster.png)
+
+
 **✅ Step 8: Deploy the Flask Application**
 - **Objective**: Deploy the CGSS Shift Management Flask application to the Kubernetes cluster.
 - **Actions**:
