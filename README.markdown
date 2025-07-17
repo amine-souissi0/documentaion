@@ -1497,6 +1497,9 @@ I automated the process of building and pushing a Docker image of my Flask app u
 #### Conclusion
 The Flask application is successfully deployed with Docker using TeamCity on Kubernetes as of 11:55 AM +08, Thursday, July 17, 2025, providing a containerized and automated deployment solution for the CGSS Shift Management project.
 
+![deploy Screenshot](docs/deploy.png)
+
+
 ## ⚙️ Ansible Automation
 ### Implement Ansible Automation for CGSS Shift Management
 #### Purpose
