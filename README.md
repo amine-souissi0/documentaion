@@ -45,7 +45,6 @@ The application allows administrators and regular users to access it securely. A
 Simple User Scenario (Use Case Clearly Explained)
 A. Admin User (amine) 🧑‍💼
 
-
 Login: Access at http://localhost:5000/login with Admin credentials (Username: amine, Password: amine).
 After Login:
 View dashboard 📊.
@@ -1805,8 +1804,7 @@ Build failures due to missing dependencies, fixed by updating requirements.txt.
 
 Conclusion
 The Flask application is successfully deployed using TeamCity’s CI/CD pipeline on Kubernetes as of 11:56 AM +08, July 16, 2025, with automated builds and accessible functionality, marking a significant step in project automation.
-
-    🐳 Deploy Flask App with TeamCity & Docker
+🐳 Deploy Flask App with TeamCity & Docker
 Deploy Flask App with Docker Using TeamCity on Kubernetes for CGSS Shift Management
 Purpose
 This task details the deployment of the CGSS Shift Management Flask application using Docker and TeamCity’s CI/CD pipeline on the Kubernetes cluster, ensuring containerized and versioned deployments.
