@@ -655,6 +655,7 @@ curl http://localhost:5000/v2/_catalog
 
 #### Conclusion
 The Jenkins pipeline successfully automates the build and deployment process, integrating with the local Docker registry and ensuring consistent image creation from the GitHub repository.
+![Jenkins pipeline successfully automates the build and deployment process Screenshot](docs/jenkins.png)
 
 ## 🏗 Terraform Script
 ### Create a Terraform Script to Provision a Server and Run the Application
