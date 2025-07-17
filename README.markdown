@@ -325,9 +325,9 @@ for col in row.index:
 
 6. **Show the Results**
    - Displayed the counts in `shift_stats.html` as a table with clickable numbers linking to shift details.
-     ![excel Screenshot](docs/excel.png)
+     ![excel Screenshot](docs/excel .png)
 
-![stats Screenshot](docs/excelstats.png)
+![stats Screenshot](docs/excel stats.png)
 
 #### Goal
 Make the shift details page show the full context: day, week number, and date.
