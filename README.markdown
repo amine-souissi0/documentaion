@@ -1133,6 +1133,7 @@ The Kubernetes cluster, comprising a master node (`cgss-master`) and a worker no
 #### Purpose
 The purpose of this task is to deploy TeamCity, a Continuous Integration and Continuous Deployment (CI/CD) server by JetBrains, on the Kubernetes cluster to automate the build, test, and deployment processes for the CGSS Shift Management Flask application. TeamCity enhances development efficiency by automating code compilation, testing, and deployment to various environments, integrating seamlessly with Kubernetes for containerized workflows.
 
+![teamcity Screenshot](docs/teamcity.png)
 #### Why TeamCity?
 Your manager requested TeamCity to automate deployments, eliminating manual rebuilds and redeployments with each code change. It ensures reliable, repeatable deployments through standardized testing and aligns with Kubernetes usage in your company. As a cornerstone of DevOps, TeamCity boosts agility, reduces risks, and supports team collaboration with centralized build logs and deployment history.
 
