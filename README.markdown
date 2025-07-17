@@ -31,7 +31,7 @@ The CGSS Shift Management project transforms a manual Excel-based shift scheduli
 ## 🎯 Project Overview
 ### 1. Project Overview (Topic & Goal)
 The project is a Flask-based web application intended to manage:
-![Login Screenshot](screenshots/login.png)
+![Login Screenshot](docs/login.png)
 *Caption: Login page demonstrating user authentication for CGSS Shift Management.*
 - User Authentication (Login/Logout) 🔒: Secure access for all users.
 - User Management (Create, Update, Delete users) 👥: Admin-only functionality to handle user accounts.
