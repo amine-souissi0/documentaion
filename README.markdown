@@ -497,7 +497,7 @@ docker run -p 5000:5000 gocho123/my-flask-app:latest
 
 #### Conclusion
 By following these steps, the CGSS Shift Management application was successfully Dockerized, pushed to Docker Hub, and made accessible on any machine with Docker installed, ensuring portability and ease of deployment.
-
+![docker Screenshot](docs/docker.png)
 ## 🤖 GitHub Actions Automation
 ### Set Up Automated Builds with Docker and GitHub Actions
 #### Purpose
