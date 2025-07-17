@@ -1548,67 +1548,9 @@ ansible-playbook -i inventory.yml deploy.yml
 
 #### Conclusion
 Ansible automation streamlines the CGSS Shift Management deployment, ensuring consistency across nodes as of 11:55 AM +08, Thursday, July 17, 2025.
+![ansible Screenshot](docs/pipeline.png)
 
-## 📷 How to Add Photos
-### Easiest Methods to Add Photos to README.md
-Adding photos (e.g., screenshots like `login.png`) to your README.md is simple. Here’s how:
 
-#### Method 1: Upload Directly to GitHub Repository
-1. **Prepare Your Photo**
-   - Take a screenshot (e.g., `login.png`) and resize it to under 1 MB if needed.
-2. **Upload to Repository**
-   - Go to your GitHub repository, click **"Add file"** > **"Upload files"**.
-   - Drag `login.png` into the upload area or browse to select it.
-   - Optionally, create a `screenshots/` folder first, then upload into it.
-   - Commit with a message like "Add login.png screenshot".
-3. **Add to README.md**
-   - Edit `README.md`, insert:
-     ```markdown
-     ![Login Screenshot](screenshots/login.png)
-     *Caption: Login page of CGSS Shift Management app.*
-     ```
-   - Commit changes.
-4. **Verify**
-   - Refresh the repository page to see the photo.
-
-#### Method 2: Use Git Locally
-1. **Prepare Your Photo**
-   - Save `login.png` locally.
-2. **Add to Local Repository**
-   - Navigate to your repo: `cd path/to/internship2025`.
-   - Create `screenshots/` folder: `mkdir screenshots`.
-   - Copy photo: `cp /path/to/login.png screenshots/`.
-3. **Commit and Push**
-   - `git add screenshots/login.png`
-   - `git commit -m "Add login.png screenshot"`
-   - `git push origin main`
-4. **Update README.md**
-   - Edit locally, add:
-     ```markdown
-     ![Login Screenshot](screenshots/login.png)
-     *Caption: Login page of CGSS Shift Management app.*
-     ```
-   - `git add README.md`, `git commit -m "Update README"`, `git push origin main`.
-5. **Verify**
-   - Check GitHub.
-
-#### Method 3: Use External Hosting (e.g., Imgur)
-1. **Upload Photo**
-   - Go to `https://imgur.com/upload`, upload `login.png`, copy the direct link (e.g., `https://i.imgur.com/abc123.png`).
-2. **Add to README.md**
-   - Edit `README.md`, insert:
-     ```markdown
-     ![Login Screenshot](https://i.imgur.com/abc123.png)
-     *Caption: Login page of CGSS Shift Management app.*
-     ```
-   - Commit changes.
-3. **Verify**
-   - Refresh the repository page.
-
-#### Tips
-- Use `screenshots/` folder for organization.
-- Add descriptive alt text (e.g., "Login Screenshot").
-- Preview changes before committing.
 
 ## 🎉 Conclusion
 The CGSS Shift Management project has evolved from an Excel-based system to a cloud-native Flask application deployed on a Kubernetes cluster, with automation via TeamCity and Ansible. As of 11:55 AM +08, Thursday, July 17, 2025, this comprehensive setup, detailed over weeks of effort, ensures scalability, security, and efficiency, marking a significant advancement in modern DevOps practices for the project.
