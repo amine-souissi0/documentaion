@@ -765,7 +765,7 @@ The purpose of this task is to enhance the CGSS Shift Management application by 
 
 #### Conclusion
 The off days management feature successfully integrates into the CGSS Shift Management application, providing a clear view of off-day allocations and updates, enhancing administrative oversight and user experience.
-![offdays Screenshot](docs/off%20days.png)
+![offdays Screenshot](docs/off%20days%20.png)
 
 
 
