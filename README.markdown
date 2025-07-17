@@ -765,6 +765,9 @@ The purpose of this task is to enhance the CGSS Shift Management application by 
 
 #### Conclusion
 The off days management feature successfully integrates into the CGSS Shift Management application, providing a clear view of off-day allocations and updates, enhancing administrative oversight and user experience.
+![offdays Screenshot](docs/off%20days.png)
+
+
 
 ## ☁️ Docker on GCP with Terraform
 ### Docker App Deployment on GCP with Terraform for CGSS Shift Management
