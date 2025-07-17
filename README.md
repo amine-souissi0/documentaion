@@ -22,14 +22,15 @@ Deploy TeamCity on Kubernetes
 Deploy Flask App with TeamCity
 Deploy Flask App with TeamCity & Docker
 Ansible Automation
+How to Add Photos
 Conclusion
 
 📖 Introduction
 The CGSS Shift Management project transforms a manual Excel-based shift scheduling process into a scalable, cloud-native Flask web application. The system automates employee scheduling, absence management, and notifications, with role-based access control (RBAC) for admins and regular users. Deployed on Google Cloud Platform (GCP) using Docker, Kubernetes, TeamCity, and now Ansible for automation, it ensures reliability and scalability. This documentation provides a detailed, organized, and comprehensive step-by-step account of all tasks, including the creation of a Kubernetes cluster with QEMU/KVM, TeamCity installation, Ansible automation, and related deployment efforts, reflecting the extensive effort invested over several weeks and months.
 🎯 Project Overview
 1. Project Overview (Topic & Goal)
-The project is a Flask-based web application intended to manage:
-![Login Screenshot](docs/login.png)
+The project is a Flask-based web application intended to manage:Caption: Login page demonstrating user authentication for CGSS Shift Management.
+
 User Authentication (Login/Logout) 🔒: Secure access for all users.
 User Management (Create, Update, Delete users) 👥: Admin-only functionality to handle user accounts.
 Employee and Shift Management 📅:
@@ -1430,7 +1431,7 @@ kubectl apply -f flask-service.yaml
 
 
 Time Investment: 2 days to debug pod scheduling and optimize Calico network settings.
-Verification: Accessed the app via the external IP from kubectl get services and tested core functionalities as of 11:56 AM +08, July 16, 2025.
+Verification: Accessed the app via the external IP from kubectl get services and tested core functionalities as of 11:55 AM +08, Thursday, July 17, 2025.
 
 Challenges Encountered
 
@@ -1439,7 +1440,7 @@ Flannel’s network instability necessitated a switch to Calico, which provided 
 Swap memory conflicts delayed initial Kubernetes setup, resolved by disabling swap permanently.
 
 Conclusion
-The Kubernetes cluster, comprising a master node (cgss-master) and a worker node (amine) on QEMU/KVM VMs, successfully hosts the CGSS Shift Management Flask application. The adoption of Calico as the pod network addressed early connectivity issues, ensuring a scalable and resilient deployment as of 11:56 AM +08, July 16, 2025.
+The Kubernetes cluster, comprising a master node (cgss-master) and a worker node (amine) on QEMU/KVM VMs, successfully hosts the CGSS Shift Management Flask application. The adoption of Calico as the pod network addressed early connectivity issues, ensuring a scalable and resilient deployment as of 11:55 AM +08, Thursday, July 17, 2025.
 🚀 Deploy TeamCity on Kubernetes
 Deploy TeamCity on Kubernetes for CGSS Shift Management
 Purpose
@@ -1674,7 +1675,7 @@ Firewall restrictions delayed UI access, addressed by adjusting rules and using 
 Agent authorization required multiple attempts due to network latency with Calico.
 
 Conclusion
-TeamCity is successfully deployed on the Kubernetes cluster as of 11:56 AM +08, July 16, 2025, with a configured agent and accessible UI via SSH tunneling. The automated reverse tunnel ensures consistent Flask app access, providing a robust CI/CD foundation for the CGSS Shift Management project.
+TeamCity is successfully deployed on the Kubernetes cluster as of 11:55 AM +08, Thursday, July 17, 2025, with a configured agent and accessible UI via SSH tunneling. The automated reverse tunnel ensures consistent Flask app access, providing a robust CI/CD foundation for the CGSS Shift Management project.
 🛠 Deploy Flask App with TeamCity
 Deploy Flask App Using TeamCity on Kubernetes for CGSS Shift Management
 Purpose
@@ -1755,7 +1756,7 @@ Accessed the Running Application
 Objective: Verify the app is accessible.
 Actions:
 Accessed the app in a browser at http://192.168.122.76:5000 via the agent’s IP.
-Tested core functionalities (e.g., shift selection, request submission) as of 11:56 AM +08, July 16, 2025.
+Tested core functionalities (e.g., shift selection, request submission) as of 11:55 AM +08, Thursday, July 17, 2025.
 
 
 Time Investment: 30 minutes to test access.
@@ -1803,7 +1804,7 @@ Initial agent connection issues, resolved by verifying network settings.
 Build failures due to missing dependencies, fixed by updating requirements.txt.
 
 Conclusion
-The Flask application is successfully deployed using TeamCity’s CI/CD pipeline on Kubernetes as of 11:56 AM +08, July 16, 2025, with automated builds and accessible functionality, marking a significant step in project automation.
+The Flask application is successfully deployed using TeamCity’s CI/CD pipeline on Kubernetes as of 11:55 AM +08, Thursday, July 17, 2025, with automated builds and accessible functionality, marking a significant step in project automation.
 🐳 Deploy Flask App with TeamCity & Docker
 Deploy Flask App with Docker Using TeamCity on Kubernetes for CGSS Shift Management
 Purpose
@@ -1921,14 +1922,14 @@ kubectl apply -f flask-deployment.yaml
 Time Investment: 1 hour to deploy and test.
 
 Summary for Your Report
-I automated the process of building and pushing a Docker image of my Flask app using TeamCity. After connecting my GitHub repository, I configured TeamCity to build my Docker image and push it to Docker Hub every time a build runs. I used a secure Docker Hub access token for authentication and verified the image was successfully pushed by checking Docker Hub and pulling the image. This setup allows quick deployment anywhere and ensures the image is always up-to-date as of 11:56 AM +08, July 16, 2025.
+I automated the process of building and pushing a Docker image of my Flask app using TeamCity. After connecting my GitHub repository, I configured TeamCity to build my Docker image and push it to Docker Hub every time a build runs. I used a secure Docker Hub access token for authentication and verified the image was successfully pushed by checking Docker Hub and pulling the image. This setup allows quick deployment anywhere and ensures the image is always up-to-date as of 11:55 AM +08, Thursday, July 17, 2025.
 Challenges Encountered
 
 Initial Docker build failures due to missing dependencies, resolved by updating requirements.txt.
 Authentication issues with Docker Hub, fixed by correctly configuring the access token.
 
 Conclusion
-The Flask application is successfully deployed with Docker using TeamCity on Kubernetes as of 11:56 AM +08, July 16, 2025, providing a containerized and automated deployment solution for the CGSS Shift Management project.
+The Flask application is successfully deployed with Docker using TeamCity on Kubernetes as of 11:55 AM +08, Thursday, July 17, 2025, providing a containerized and automated deployment solution for the CGSS Shift Management project.
 ⚙️ Ansible Automation
 Implement Ansible Automation for CGSS Shift Management
 Purpose
@@ -2015,6 +2016,91 @@ Initial playbook errors due to incorrect paths, resolved by updating file refere
 Network delays with Calico required playbook retries.
 
 Conclusion
-Ansible automation streamlines the CGSS Shift Management deployment, ensuring consistency across nodes as of 11:56 AM +08, July 16, 2025.
+Ansible automation streamlines the CGSS Shift Management deployment, ensuring consistency across nodes as of 11:55 AM +08, Thursday, July 17, 2025.
+📷 How to Add Photos
+Easiest Methods to Add Photos to README.md
+Adding photos (e.g., screenshots like login.png) to your README.md is simple. Here’s how:
+Method 1: Upload Directly to GitHub Repository
+
+Prepare Your Photo
+Take a screenshot (e.g., login.png) and resize it to under 1 MB if needed.
+
+
+Upload to Repository
+Go to your GitHub repository, click "Add file" > "Upload files".
+Drag login.png into the upload area or browse to select it.
+Optionally, create a screenshots/ folder first, then upload into it.
+Commit with a message like "Add login.png screenshot".
+
+
+Add to README.md
+Edit README.md, insert:![Login Screenshot](screenshots/login.png)
+*Caption: Login page of CGSS Shift Management app.*
+
+
+Commit changes.
+
+
+Verify
+Refresh the repository page to see the photo.
+
+
+
+Method 2: Use Git Locally
+
+Prepare Your Photo
+Save login.png locally.
+
+
+Add to Local Repository
+Navigate to your repo: cd path/to/internship2025.
+Create screenshots/ folder: mkdir screenshots.
+Copy photo: cp /path/to/login.png screenshots/.
+
+
+Commit and Push
+git add screenshots/login.png
+git commit -m "Add login.png screenshot"
+git push origin main
+
+
+Update README.md
+Edit locally, add:![Login Screenshot](screenshots/login.png)
+*Caption: Login page of CGSS Shift Management app.*
+
+
+git add README.md, git commit -m "Update README", git push origin main.
+
+
+Verify
+Check GitHub.
+
+
+
+Method 3: Use External Hosting (e.g., Imgur)
+
+Upload Photo
+Go to https://imgur.com/upload, upload login.png, copy the direct link (e.g., https://i.imgur.com/abc123.png).
+
+
+Add to README.md
+Edit README.md, insert:![Login Screenshot](https://i.imgur.com/abc123.png)
+*Caption: Login page of CGSS Shift Management app.*
+
+
+Commit changes.
+
+
+Verify
+Refresh the repository page.
+
+
+
+Tips
+
+Use screenshots/ folder for organization.
+Add descriptive alt text (e.g., "Login Screenshot").
+Preview changes before committing.
+
 🎉 Conclusion
-The CGSS Shift Management project has evolved from an Excel-based system to a cloud-native Flask application deployed on a Kubernetes cluster, with automation via TeamCity and Ansible. As of 11:56 AM +08, July 16, 2025, this comprehensive setup, detailed over weeks of effort, ensures scalability, security, and efficiency, marking a significant advancement in modern DevOps practices for the project.
+The CGSS Shift Management project has evolved from an Excel-based system to a cloud-native Flask application deployed on a Kubernetes cluster, with automation via TeamCity and Ansible. As of 11:55 AM +08, Thursday, July 17, 2025, this comprehensive setup, detailed over weeks of effort, ensures scalability, security, and efficiency, marking a significant advancement in modern DevOps practices for the project.
