@@ -326,8 +326,9 @@ for col in row.index:
 6. **Show the Results**
    - Displayed the counts in `shift_stats.html` as a table with clickable numbers linking to shift details.
 
-![Excel Screenshot](docs/excel .png)
-![Stats Screenshot](docs/excel stats.png)
+![Excel Screenshot](docs/excel%20.png)
+![Stats Screenshot](docs/excel%20stats.png)
+
 
 
 #### Goal
