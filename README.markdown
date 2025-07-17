@@ -253,6 +253,41 @@ This restarts the Flask app, making it accessible again on the external IP (`34.
 #### Conclusion
 Hosting the Flask app on an external IP (`34.16.33.223:5000`) enables remote access for administrators and users, aligning with the project's goal of a scalable, cloud-native solution. The provided steps ensure other users can connect to the GCP instance and resume development or testing efficiently.
 
+
+📧 **Email Notification on Shift Assignment**
+
+Whenever a new shift is assigned to an employee, the CGSS Shift Management system automatically sends an email notification to the user with all relevant shift details. This ensures timely communication and allows employees to be instantly informed of their schedules.
+
+#### **How It Works**
+- Upon assigning a shift, the backend triggers an email to the employee's registered address.
+- The email includes:  
+  - The employee’s name  
+  - Date of the shift  
+  - Start and end time  
+  - Shift type (e.g., Morning, Night)  
+  - A reminder to check the dashboard for more details
+
+#### **Sample Email**
+
+![Shift Assignment Email Example](docs/emailnotif.png)
+
+> **Subject:** New Shift Assigned  
+> Hello amine2 amine2,  
+>  
+> You have been assigned a new shift.  
+> **Date:** 2025-07-09  
+> **Time:** 7 AM - 5 PM  
+> **Shift Type:** Morning  
+>
+> Please log in to your dashboard for details.
+
+#### **Why this matters**
+- Ensures employees never miss an assigned shift.
+- Automates workflow and reduces manual communication effort.
+- Demonstrates integration of system backend with email services (SMTP/Google Mail API, etc.)
+
+
+
 ## 📄 Excel/CSV Upload & Editing
 ### Excel/CSV File Upload and Editing Feature
 #### Purpose
